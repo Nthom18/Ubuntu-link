@@ -1,0 +1,4 @@
+
+
+
+g++ ObstacleAvoidance.cpp -o ObstacleAvoidance -I/home/nico929/Documents/fuzzylite-6.0 -L/home/nico929/Documents/fuzzylite-6.0/release/bin -lfuzzylite-static --std=c++11

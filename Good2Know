@@ -1,0 +1,18 @@
+Danish keyboard layout:
+setxkbmap dk
+
+
+
+Link to OneDrive:
+https://onedrive.live.com/?id=root&cid=0B4E88A87B2A6748
+
+
+Navigér til Gazebo git folder
+bash gazebo_server.sh smallworld.world
+Ny terminal
+bash gazebo_client.sh
+
+
+cmake .
+make
+./robot_control
