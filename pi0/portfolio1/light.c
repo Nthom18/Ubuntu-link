@@ -59,9 +59,6 @@ void switchLED()
 
   digitalWrite(red, LOW); digitalWrite(green, LOW);
 
-  // Light yellow LED
-  digitalWrite(yellow, HIGH); delay(WAIT); digitalWrite(yellow, LOW);
-
   if (isGreen)
   {
     digitalWrite(yellow, HIGH);
