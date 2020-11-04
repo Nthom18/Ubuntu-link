@@ -63,9 +63,21 @@ void switchLED()
   digitalWrite(yellow, HIGH); delay(WAIT); digitalWrite(yellow, LOW);
 
   if (isGreen)
+  {
+    digitalWrite(yellow, HIGH);
+    delay(WAIT);
+    digitalWrite(yellow, LOW);
     digitalWrite(red, HIGH);
+  }    
   else if (isRed)
+  {
+    digitalWrite(red, HIGH);
+    digitalWrite(yellow, HIGH); 
+    delay(WAIT);
+    digitalWrite(red, LOW);
+    digitalWrite(yellow, LOW); 
     digitalWrite(green, HIGH);
+  }
 
   delay(WAIT);
 }
