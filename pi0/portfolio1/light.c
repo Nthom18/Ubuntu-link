@@ -41,9 +41,9 @@ int main ()
     // Switch if input is received
     if ((!digitalRead(button)) | (net == 1))
     {
+      switchLED();
       system("> received.txt");
       net = 0;
-      switchLED();
     }
     fclose(received);
   }
