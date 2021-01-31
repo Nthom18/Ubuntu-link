@@ -11,7 +11,7 @@ public:
     Tree(){}
     Tree(int BoardHeight, int BoardWidth, int KnightStartXPosition,
          int KnightStartYPosition, int KnightEndXPosition, int KnightEndYPosition);
-    ~Tree(){}
+    ~Tree();
 
     int minSteps = 0;
 
@@ -35,5 +35,7 @@ private:
     void printBoardVisits();
 
     void printAllNodes(Node* node);
+
+    void iterateDestructor(std::vector<Node*> nodes);
 };
 #endif

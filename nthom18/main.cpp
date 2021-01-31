@@ -12,7 +12,6 @@ int main() {
     // Positions are indexed starting from 0.
     // So the position [0,0] translates to A1 in chess nomenclature.
 
-    cout << MinimumSteps(1000,1000,0,0,0,0) << endl;
     cout << MinimumSteps(1000,1000,1,2,3,4) << endl;
     cout << MinimumSteps(1000,1000,1,2,7,7) << endl;
     cout << MinimumSteps(1000,1000,0,0,6,6) << endl;

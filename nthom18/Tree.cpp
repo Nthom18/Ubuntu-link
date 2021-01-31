@@ -7,6 +7,15 @@
 #define SHORT_STEP 1
 #define MOVES 8
 
+Tree::~Tree()
+{
+    // // Make vector of root only
+    // std::vector<Node*> nodes = {&root};
+
+    // // Compute tree until final node is found
+    // iterateDestructor(nodes);
+}
+
 Tree::Tree(int BoardHeight, int BoardWidth, int KnightStartXPosition,
            int KnightStartYPosition, int KnightEndXPosition, int KnightEndYPosition)
 {
@@ -126,4 +135,19 @@ void Tree::printAllNodes(Node* node)
 
     for( int i = 0; i < node->children.size(); i++ )
         printAllNodes(node->children[i]);
+}
+
+void Tree::iterateDestructor(std::vector<Node*> nodes)
+{
+    std::vector<Node*> nodeList;
+
+    for( auto i : nodes )
+    {
+        for (int j = 0; j < i->children.size(); j++)
+            nodeList.push_back(i->children[j]);
+    }
+    iterateDestructor(nodeList);
+        
+    for( auto k : nodeList )
+        delete[] k;
 }
