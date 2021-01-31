@@ -1,3 +1,0 @@
-#define NUM_IMAGES 15
-#define IMAGE_DIMENSION 200
-#define BLACK 50

@@ -1,4 +1,0 @@
-#define IMAGE_DIMENSION 1000
-#define BLACK 50
-#define STEP_SIZE 10
-#define SEARCH_ANGLE 30

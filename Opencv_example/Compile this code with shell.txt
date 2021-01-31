@@ -1,6 +1,0 @@
-
-Da det er en shell kan den ikke få lov til at åbne et vindue for at vise programmet, 
-men ud over det bør det køre!
-
-g++ main.cpp `pkg-config --cflags --libs opencv4`
-./a.out
