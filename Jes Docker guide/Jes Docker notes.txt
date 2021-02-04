@@ -1,0 +1,14 @@
+Så er der nogle noter at starte ud med (se vedhæftet), og her er der en hurtig video af hvordan det fungerer: https://nextcloud.sdu.dk/index.php/s/eitkNoNkcyzBYXZ 
+•	Kommandoer:
+o	docker run --name px4-sim-world-empty --network host -id --rm sduuascenter/px4-simulation:vm-server-sdu-world 17550 11311 empty
+o	docker run --name px4-sim-drone-1 --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 iris 1 -1 -1 
+•	Så der var et problem med at der ikke kom data igenem mavros, hvilket jeg regner med at finde ud af hvorfor der ikke kommer det. Ved ikke hvad projektet præcist går ud på, men tænker at hvis de enkelte droner skal styres, så vil det nok være gennem mavros. 
+
+
+Så er problemet med dataflow i mavros topics fikset og testet: https://nextcloud.sdu.dk/index.php/s/kHgztEcMH9QGGeR  
+
+Håber videoerne er en hjælp til at komme i gang med docker og px4, her er lige et par links til nogle af de vigtigste elementer: 
+•	https://github.com/PX4/PX4-Autopilot
+•	http://qgroundcontrol.com/
+•	https://github.com/mavlink/mavros/
+
