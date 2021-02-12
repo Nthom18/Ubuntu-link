@@ -12,3 +12,10 @@ Håber videoerne er en hjælp til at komme i gang med docker og px4, her er lige
 •	http://qgroundcontrol.com/
 •	https://github.com/mavlink/mavros/
 
+
+
+
+
+
+
+GAZEBO_MASTER_URI=http://localhost:17550 gzclient --verbose
