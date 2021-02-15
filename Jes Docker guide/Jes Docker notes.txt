@@ -16,6 +16,8 @@ Håber videoerne er en hjælp til at komme i gang med docker og px4, her er lige
 
 
 
+docker run --name world --network host -id --rm sduuascenter/px4-simulation:vm-server-sdu-world 17550 11311 empty
 
+docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 iris 1 -1 -1 
 
 GAZEBO_MASTER_URI=http://localhost:17550 gzclient --verbose
