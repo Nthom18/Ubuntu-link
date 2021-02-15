@@ -13,6 +13,9 @@ Håber videoerne er en hjælp til at komme i gang med docker og px4, her er lige
 •	https://github.com/mavlink/mavros/
 
 
+Download modeller her i stedet for Gazebo:
+https://nextcloud.sdu.dk/index.php/s/EXsDrApbm2FNG5C
+
 
 
 
