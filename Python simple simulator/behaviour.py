@@ -4,9 +4,9 @@ from vector import Vector2D
 from boid import Boid
 import constants
 
-ALIGN_FACTOR = 1
-COHESION_FACTOR = 1
-SEPERTION_FACTOR = 0.5
+ALIGN_FACTOR = 0.01
+COHESION_FACTOR = 0
+SEPERTION_FACTOR = 0
 
 class Behaviour():
 

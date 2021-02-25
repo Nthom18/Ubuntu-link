@@ -5,6 +5,7 @@ Author: Nicoline Louise Thomsen
 Last update: 18-02-21
 """
 
+from ctypes import alignment
 import numpy as np
 import time
 import tkinter as tk
@@ -40,14 +41,40 @@ class BoardWhite(tk.Canvas):
 
     def __init__(self):
         super().__init__(width = constants.BOARD_SIZE/2, height = constants.BOARD_SIZE,
-            background="white", highlightthickness=0)
+            highlightthickness=0)
 
         self.pack_propagate(0) #Don't allow the widgets inside to determine the frame's width / height
         
-        self.text = tk.StringVar()
-        self.text.set("Test")
-        self.label = tk.Label(self, textvariable=self.text)
-        self.label.pack(fill=tk.X, padx=100)
+        # Test Label
+        # self.text = tk.StringVar()
+        # self.label = tk.Label(self, textvariable=self.text)
+        # self.label.pack(fill=tk.X, padx = 100)
+
+        # Alignment options
+        self.alignment = tk.IntVar(value = 1)
+        self.chk_alignment = tk.Checkbutton(self, text = 'Alignment', variable = self.alignment)
+        self.chk_alignment.pack()
+
+        self.sldr_alignment = tk.Scale(self, from_ = 0, to = 20, tickinterval = 1, length = constants.BOARD_SIZE/2 - 80, digits = 2, orient = tk.HORIZONTAL)
+        self.sldr_alignment.pack()
+
+        # Cohesion options
+        self.cohesion = tk.IntVar(value = 1)
+        self.chk_cohesion = tk.Checkbutton(self, text = 'Cohesion', variable = self.cohesion)
+        self.chk_cohesion.pack()
+
+        self.sldr_cohesion = tk.Scale(self, from_ = 0, to = 20, tickinterval = 1, length = constants.BOARD_SIZE/2 - 80, digits = 2, orient = tk.HORIZONTAL)
+        self.sldr_cohesion.pack()
+
+        # Seperation options
+        self.seperation = tk.IntVar(value = 1)
+        self.chk_seperation = tk.Checkbutton(self, text = 'Seperation', variable = self.seperation)
+        self.chk_seperation.pack()
+
+        self.sldr_seperation = tk.Scale(self, from_ = 0, to = 20, tickinterval = 1, length = constants.BOARD_SIZE/2 - 80, digits = 2, orient = tk.HORIZONTAL)
+        self.sldr_seperation.pack()
+
+
 
         self.pack(side = tk.RIGHT)
 
@@ -72,17 +99,34 @@ optFrame = OptionFrame()
 flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(15)]
 
 
+
 while True:
     # Boid control
     for boid in flock:
 
         # Calculate steering, insert steering in update
-        force = Behaviour(boid).force(flock)
+        if optFrame.board.alignment.get() == 1:
+            a = Behaviour(boid).alignment(flock)
+        else:
+            a = Vector2D(*np.zeros(2))
+
+        if optFrame.board.cohesion.get() == 1:
+            c = Behaviour(boid).cohesion(flock)
+        else:
+            c = Vector2D(*np.zeros(2))
+
+        if optFrame.board.seperation.get() == 1:
+            s = Behaviour(boid).separation(flock)
+        else:
+            s = Vector2D(*np.zeros(2))
+
+        # Using sliders to weigh values
+        force = a*optFrame.board.sldr_alignment.get()*0.1 + c*optFrame.board.sldr_cohesion.get()*0.1 + s*optFrame.board.sldr_seperation.get()*0.1
 
         boid.update(force)
 
     # Write to labes
-    optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
+    # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
 
     root.update_idletasks()
     root.update()
