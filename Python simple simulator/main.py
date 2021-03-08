@@ -15,6 +15,8 @@ from boid import Boid
 import constants
 from vector import Vector2D
 
+FLOCK_SIZE = 30
+
 
 class BoardBlack(tk.Canvas):
 
@@ -96,7 +98,7 @@ boidFrame = BoidFrame()
 optFrame = OptionFrame()
 
 # Spawn boids
-flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(15)]
+flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(FLOCK_SIZE)]
 
 
 
@@ -121,7 +123,10 @@ while True:
             s = Vector2D(*np.zeros(2))
 
         # Using sliders to weigh values
-        force = a*optFrame.board.sldr_alignment.get()*0.1 + c*optFrame.board.sldr_cohesion.get()*0.1 + s*optFrame.board.sldr_seperation.get()*0.1
+        force = a*optFrame.board.sldr_alignment.get() + c*optFrame.board.sldr_cohesion.get() + s*optFrame.board.sldr_seperation.get()
+        
+        if force.__abs__() > constants.MAX_FORCE:
+            force = (force / force.__abs__()) * constants.MAX_FORCE
 
         boid.update(force)
 

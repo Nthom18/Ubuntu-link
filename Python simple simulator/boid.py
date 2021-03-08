@@ -13,11 +13,13 @@ import constants
 
 DOT_SIZE = 5
 
-
 class Boid():
 
     def __init__(self, canvas, x, y):
         self.canvas = canvas
+        self.hitbox = DOT_SIZE
+        self.colour = constants.COLOUR_WHITE
+
         self.perception = constants.PERCEPTION
         self.position = Vector2D(x, y)
         self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
@@ -29,9 +31,9 @@ class Boid():
     def update(self, force):
 
         self.acceleration += force
-
-        self.position += self.velocity
         self.velocity += self.acceleration
+        self.position += self.velocity
+        
 
         vel = [self.velocity.x, self.velocity.y]
         if np.linalg.norm(vel) > constants.MAX_SPEED:
@@ -39,6 +41,8 @@ class Boid():
 
         self.outOfBounds()
         self.canvas.move(self.dot, self.velocity.x, self.velocity.y)
+
+        self.acceleration = Vector2D(*np.zeros(2))
 
     def makeDot(self, init):
         if not init:
@@ -48,7 +52,7 @@ class Boid():
         y0 = self.position.y - DOT_SIZE
         x1 = self.position.x + DOT_SIZE
         y1 = self.position.y + DOT_SIZE
-        return self.canvas.create_oval(x0, y0, x1, y1, fill = "white", outline = "")
+        return self.canvas.create_oval(x0, y0, x1, y1, fill = self.colour, outline = "")
 
     def outOfBounds(self):
         if self.position.x > constants.BOARD_SIZE:
