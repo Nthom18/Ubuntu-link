@@ -50,16 +50,16 @@ class OffboardControl:
         self.prev_state = self.current_state
 
         # Publishers
-        self.local_pos_pub = rospy.Publisher('/mavros/setpoint_position/local', PoseStamped, queue_size=10)
+        self.local_pos_pub = rospy.Publisher('/sdu_drone_1/mavros/setpoint_position/local', PoseStamped, queue_size=10)
 
         # Subscribers
-        self.state_sub = rospy.Subscriber('/mavros/state', State, self.cb_state)
-        self.sub_target = rospy.Subscriber('/mavros/offbctrl/target', PoseStamped, self.cb_target)
+        self.state_sub = rospy.Subscriber('/sdu_drone_1/mavros/state', State, self.cb_state)
+        self.sub_target = rospy.Subscriber('/sdu_drone_1/mavros/offbctrl/target', PoseStamped, self.cb_target)
 
         # Services
-        self.arming_client = rospy.ServiceProxy('/mavros/cmd/arming', CommandBool)
-        self.takeoff_client = rospy.ServiceProxy('/mavros/cmd/takeoff', CommandTOL)
-        self.set_mode_client = rospy.ServiceProxy('/mavros/set_mode', SetMode)
+        self.arming_client = rospy.ServiceProxy('/sdu_drone_1/mavros/cmd/arming', CommandBool)
+        self.takeoff_client = rospy.ServiceProxy('/sdu_drone_1/mavros/cmd/takeoff', CommandTOL)
+        self.set_mode_client = rospy.ServiceProxy('/sdu_drone_1/mavros/set_mode', SetMode)
 
         ## Create services
         self.setpoint_controller_server()
