@@ -106,25 +106,13 @@ while True:
     # Boid control
     for boid in flock:
 
-        # Calculate steering, insert steering in update
-        if optFrame.board.alignment.get() == 1:
-            a = Behaviour(boid).alignment(flock)
-        else:
-            a = Vector2D(*np.zeros(2))
-
-        if optFrame.board.cohesion.get() == 1:
-            c = Behaviour(boid).cohesion(flock)
-        else:
-            c = Vector2D(*np.zeros(2))
-
-        if optFrame.board.seperation.get() == 1:
-            s = Behaviour(boid).separation(flock)
-        else:
-            s = Vector2D(*np.zeros(2))
-
         # Using sliders to weigh values
-        force = a*optFrame.board.sldr_alignment.get() + c*optFrame.board.sldr_cohesion.get() + s*optFrame.board.sldr_seperation.get()
-        
+        a = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()
+        c = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()
+        s = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()
+
+        force = Behaviour(boid, flock, a, c, s).force
+
         if force.__abs__() > constants.MAX_FORCE:
             force = (force / force.__abs__()) * constants.MAX_FORCE
 
