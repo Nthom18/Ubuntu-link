@@ -15,7 +15,7 @@ from boid import Boid
 import constants
 from vector import Vector2D
 
-FLOCK_SIZE = 30
+FLOCK_SIZE = 20
 
 
 class BoardBlack(tk.Canvas):
@@ -100,18 +100,27 @@ optFrame = OptionFrame()
 # Spawn boids
 flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(FLOCK_SIZE)]
 
-
+rule_picker = 0
+f = 0
 
 while True:
+    rule_picker += 1
+    if rule_picker > 2:
+        rule_picker = 0
+    
     # Boid control
     for boid in flock:
 
-        # Using sliders to weigh values
-        a = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()
-        c = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()
-        s = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()
+        # Using sliders to weigh values, only update one rule at a time for each time-step
+        switcher = {
+            0: optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get(),    # Alignment
+            1: optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get(),      # Cohesion
+            2: optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()   # Seperation
+        }
 
-        force = Behaviour(boid, flock, a, c, s).force
+        f = switcher.get(rule_picker)
+
+        force = Behaviour(boid, flock, f, rule_picker).force   # Steering vector
 
         if force.__abs__() > constants.MAX_FORCE:
             force = (force / force.__abs__()) * constants.MAX_FORCE
@@ -125,11 +134,3 @@ while True:
     root.update()
     time.sleep(0.01)
 
-
-
-
-
-"""
-TODO
-Make restart button
-"""

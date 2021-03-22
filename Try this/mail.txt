@@ -1,0 +1,14 @@
+Hej Nicoline 
+
+Prøv at lav en 
+•	docker pull sduuascenter/px4-simulation:vm-server-sdu-drone
+•	docker pull sduuascenter/px4-simulation:vm-server-sdu-world
+
+og kør som du plejer
+•	docker run --name world --network host -id --rm sduuascenter/px4-simulation:vm-server-sdu-world 17550 11311 empty
+•	docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 -1 -1
+
+Kør det script ud plejer, eller det jeg har vedhæftet, og tjek dit output for /sdu_drone_1/mavros/setpoint_position/local 
+•	rostopic echo /sdu_drone_1/mavros/setpoint_position/local 
+
+Hvis der kommer data, så prøv at skifte til offboard via QGC. Hvis du kan det, så prøv at starte circle-servicen.

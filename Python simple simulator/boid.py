@@ -71,3 +71,6 @@ class Boid():
             self.position.y = constants.BOARD_SIZE
             self.dot = self.makeDot(init = False)
 
+    def lidar(self):
+        a = 0
+

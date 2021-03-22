@@ -15,7 +15,7 @@ import constants
 
 class Behaviour():
 
-    def __init__(self, boid, flock, a, c, s):
+    def __init__(self, boid, flock, f, rule_picker):
         self.boid = boid
         self.percieved = []
 
@@ -23,7 +23,16 @@ class Behaviour():
             if flockmate.position.distance_to(self.boid.position) < self.boid.perception:
                 self.percieved.append(flockmate)
 
-        self.force = a * self.alignment() + c * self.cohesion() + s * self.separation()
+        switcher = {
+            0: f * self.alignment(),
+            1: f * self.cohesion(),
+            2: f * self.separation()
+        }
+
+        self.force = switcher.get(rule_picker)
+
+    def obstacle_avoidance(self):
+        a = 0
 
 
     def alignment(self):
@@ -87,5 +96,3 @@ class Behaviour():
                 steering = avg_vector - self.boid.velocity
 
         return steering
-
-
