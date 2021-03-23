@@ -10,3 +10,6 @@ MAX_FORCE = 0.5
 
 COLOUR_RED = "red"
 COLOUR_WHITE = "white"
+COLOUR_GREY = "gray64"
+COLOUR_ORANGE = "DarkOrange1"
+COLOUR_CORAL = "coral"

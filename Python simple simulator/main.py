@@ -15,7 +15,7 @@ from boid import Boid
 import constants
 from vector import Vector2D
 
-FLOCK_SIZE = 20
+FLOCK_SIZE = 1
 
 
 class BoardBlack(tk.Canvas):
@@ -27,6 +27,20 @@ class BoardBlack(tk.Canvas):
         self.pack_propagate(0) #Don't allow the widgets inside to determine the frame's width / height
 
         self.pack(side = tk.LEFT)
+
+        # Circular obstacles x, y, r
+        self.obstacleList = [[150, 200, 50], [500, 400, 100]]
+        self.drawObstacles()
+
+    def drawObstacles(self):
+
+        for x, y, r in self.obstacleList:
+            x0 = x - r
+            y0 = y - r
+            x1 = x + r
+            y1 = y + r       
+        
+            self.create_oval(x0, y0, x1, y1, fill = constants.COLOUR_ORANGE, outline = "")
 
 
 class BoidFrame(tk.Frame):
@@ -133,4 +147,3 @@ while True:
     root.update_idletasks()
     root.update()
     time.sleep(0.01)
-

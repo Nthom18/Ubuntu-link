@@ -10,6 +10,7 @@ import tkinter as tk
 from vector import Vector2D
 
 import constants
+from lidar import LIDAR
 
 DOT_SIZE = 5
 
@@ -24,9 +25,10 @@ class Boid():
         self.position = Vector2D(x, y)
         self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
         self.acceleration = Vector2D(*np.zeros(2))
-        # self.angle = np.degrees(np.arctan2(self.position.y,self.position.x)) # Something is wrong here
 
         self.dot = self.makeDot(init = True)
+
+        self.lidar = [0]
 
     def update(self, force):
 
@@ -43,6 +45,11 @@ class Boid():
         self.canvas.move(self.dot, self.velocity.x, self.velocity.y)
 
         self.acceleration = Vector2D(*np.zeros(2))
+
+        # self.lidar = LIDAR(self.position, self.canvas.obstacleList).sensorReadings
+
+        # TEST
+        LIDAR(self.position, self.canvas.obstacleList, self.canvas).signedDistToScene()
 
     def makeDot(self, init):
         if not init:
@@ -71,6 +78,4 @@ class Boid():
             self.position.y = constants.BOARD_SIZE
             self.dot = self.makeDot(init = False)
 
-    def lidar(self):
-        a = 0
-
+    # def lidar(self):
