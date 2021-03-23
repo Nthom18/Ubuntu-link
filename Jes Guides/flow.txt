@@ -23,7 +23,7 @@ rostopic pub /sdu_drone_1/mavros/setpoint_position/local -r 10 geometry_msgs/Pos
 roslaunch px4 posix_sitl.launch
 
 
-
+Desktop/Ubuntu-link/Try\ this/./offb_posctl.py
 
 
 source /home/$USER/Firmware/Tools/setup_gazebo.bash /home/$USER/Firmware / home/$USER/Firmware/build/px4_sitl_default
