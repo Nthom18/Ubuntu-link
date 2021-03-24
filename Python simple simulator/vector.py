@@ -76,3 +76,13 @@ class Vector2D:
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), math.atan2(self.y, self.x)
 
+    # Custom functions
+
+    def norm(self):
+        """Return unit vector."""
+        return self / self.__abs__()
+
+    def rotate(self, angle):
+        """Return the vector rotated by an angle in radians"""
+        return Vector2D(self.x * math.cos(angle) - self.y * math.sin(angle), self.x * math.sin(angle) + self.y * math.cos(angle))
+

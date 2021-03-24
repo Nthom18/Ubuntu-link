@@ -13,9 +13,11 @@ from vector import Vector2D
 from boid import Boid
 import constants
 
+FOV = 1/8
+
 class Behaviour():
 
-    def __init__(self, boid, flock, f, rule_picker):
+    def __init__(self, boid, flock, slider, rule_picker):
         self.boid = boid
         self.percieved = []
 
@@ -24,15 +26,13 @@ class Behaviour():
                 self.percieved.append(flockmate)
 
         switcher = {
-            0: f * self.alignment(),
-            1: f * self.cohesion(),
-            2: f * self.separation()
+            0: slider * self.alignment(),
+            1: slider * self.cohesion(),
+            2: slider * self.separation(),
+            3: self.obstacle_avoidance()
         }
 
         self.force = switcher.get(rule_picker)
-
-    def obstacle_avoidance(self):
-        a = 0
 
 
     def alignment(self):
@@ -96,3 +96,26 @@ class Behaviour():
                 steering = avg_vector - self.boid.velocity
 
         return steering
+
+
+    def obstacle_avoidance(self):
+        object_detected = False
+        min_ray = Vector2D(*np.zeros(2))
+
+        left = self.boid.lidar[- math.ceil(len(self.boid.lidar) * FOV/2) :]
+        right = self.boid.lidar[: math.ceil(len(self.boid.lidar) * FOV/2)]
+        fov = left + right
+
+        print(fov)
+
+        # for ray in fov:
+            
+
+        #     min_ray = min(min_ray, ray)
+        #     if ray < self.boid.perception:
+        #         object_detected = True
+    
+        if object_detected:
+            return min_ray - self.boid.velocity
+
+        return Vector2D(*np.zeros(2))

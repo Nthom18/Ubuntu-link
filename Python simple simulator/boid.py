@@ -10,9 +10,9 @@ import tkinter as tk
 from vector import Vector2D
 
 import constants
-from lidar import LIDAR
+from lidar import LiDAR
 
-DOT_SIZE = 5
+DOT_SIZE = constants.DRONE_RADIUS
 
 class Boid():
 
@@ -24,6 +24,7 @@ class Boid():
         self.perception = constants.PERCEPTION
         self.position = Vector2D(x, y)
         self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
+        # self.velocity = Vector2D(1, -1) * constants.MAX_SPEED
         self.acceleration = Vector2D(*np.zeros(2))
 
         self.dot = self.makeDot(init = True)
@@ -46,10 +47,7 @@ class Boid():
 
         self.acceleration = Vector2D(*np.zeros(2))
 
-        # self.lidar = LIDAR(self.position, self.canvas.obstacleList).sensorReadings
-
-        # TEST
-        LIDAR(self.position, self.canvas.obstacleList, self.canvas).signedDistToScene()
+        self.lidar = LiDAR(self, self.canvas.obstacleList, self.canvas).sensorReadings
 
     def makeDot(self, init):
         if not init:
