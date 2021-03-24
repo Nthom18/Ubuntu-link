@@ -119,7 +119,7 @@ rule_picker = 0
 f = 0
 
 while True:
-    rule_picker = (rule_picker + 1) % 3
+    rule_picker = (rule_picker + 1) % 4
     
     # Boid control
     for boid in flock:

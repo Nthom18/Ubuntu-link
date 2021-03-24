@@ -99,23 +99,28 @@ class Behaviour():
 
 
     def obstacle_avoidance(self):
+        steering = Vector2D(*np.zeros(2))
+        max_ray = Vector2D(*np.zeros(2))
         object_detected = False
-        min_ray = Vector2D(*np.zeros(2))
-
+        
         left = self.boid.lidar[- math.ceil(len(self.boid.lidar) * FOV/2) :]
         right = self.boid.lidar[: math.ceil(len(self.boid.lidar) * FOV/2)]
         fov = left + right
 
-        print(fov)
+        # print(fov)
 
-        # for ray in fov:
-            
+        for ray in fov:
+        #     # Make sure fov array is correct.
+        #     # Give rays direction.
 
-        #     min_ray = min(min_ray, ray)
-        #     if ray < self.boid.perception:
-        #         object_detected = True
+        #     # Make sure the max function can be used with vectos, otherwise make one!
+        #     max_ray = max(max_ray, ray)
+        #     
+            if ray < self.boid.perception:
+                object_detected = True
     
         if object_detected:
-            return min_ray - self.boid.velocity
+            steering = max_ray - self.boid.velocity
+            return steering
 
-        return Vector2D(*np.zeros(2))
+        return steering
