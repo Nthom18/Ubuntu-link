@@ -24,12 +24,13 @@ class Boid():
         self.perception = constants.PERCEPTION
         self.position = Vector2D(x, y)
         self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
-        # self.velocity = Vector2D(1, -1) * constants.MAX_SPEED
+        # self.velocity = Vector2D(0, -1) * constants.MAX_SPEED
         self.acceleration = Vector2D(*np.zeros(2))
 
         self.dot = self.makeDot(init = True)
 
-        self.lidar = [0]
+        self.lidar = LiDAR(self, self.canvas.obstacleList, self.canvas)
+
 
     def update(self, force):
 
@@ -47,7 +48,7 @@ class Boid():
 
         self.acceleration = Vector2D(*np.zeros(2))
 
-        self.lidar = LiDAR(self, self.canvas.obstacleList, self.canvas).sensorReadings
+        self.lidar.update(self)
 
     def makeDot(self, init):
         if not init:
@@ -76,4 +77,3 @@ class Boid():
             self.position.y = constants.BOARD_SIZE
             self.dot = self.makeDot(init = False)
 
-    # def lidar(self):

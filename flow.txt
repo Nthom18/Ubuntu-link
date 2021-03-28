@@ -8,7 +8,7 @@ GAZEBO_MASTER_URI=http://localhost:17550 gzclient --verbose
 
 qgc
 
-Desktop/Ubuntu-link/Jes\ Guides/./offb_posctl.py
+Desktop/Ubuntu-link/./offb_posctl.py
 
 rosservice call /setpoint_controller/circle "{}" 
 
