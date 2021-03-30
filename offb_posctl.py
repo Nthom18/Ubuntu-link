@@ -195,7 +195,7 @@ class OffboardControl:
         self.set_state("STOPPED")
 
     def start_circle(self, r):
-        self.t_circle = threading.Thread(target=self.circle)
+        self.t_circle = threading.Thread(target = self.circle)
         self.t_circle.start()
         print(">> Starting circle (Thread)")
 
@@ -230,7 +230,7 @@ class OffboardControl:
     """
     Stop
     """
-    def stop(self,r):
+    def stop(self, r):
         self.set_state("STOP")
         return {}
 
