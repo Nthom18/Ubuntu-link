@@ -15,7 +15,7 @@ from boid import Boid
 import constants
 from vector import Vector2D
 
-FLOCK_SIZE = 1
+FLOCK_SIZE = 20
 
 
 class BoardBlack(tk.Canvas):
@@ -29,7 +29,7 @@ class BoardBlack(tk.Canvas):
         self.pack(side = tk.LEFT)
 
         # Circular obstacles x, y, r
-        self.obstacleList = [[150, 200, 50], [500, 400, 100]]
+        self.obstacleList = [[150, 200, 50], [500, 400, 100], [900, 900, 200]]
         self.drawObstacles()
 
     def drawObstacles(self):
@@ -113,14 +113,15 @@ optFrame = OptionFrame()
 
 # Spawn boids
 flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(FLOCK_SIZE)]
+# flock = [Boid(boidFrame.board, 550, 600)]
+
+for boid in flock:
+    steer = Behaviour(boid)   # Steering vector
 
 rule_picker = 0
-f = 0
 
 while True:
-    rule_picker += 1
-    if rule_picker > 2:
-        rule_picker = 0
+    rule_picker = (rule_picker + 1) % 4
     
     # Boid control
     for boid in flock:
@@ -129,17 +130,18 @@ while True:
         switcher = {
             0: optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get(),    # Alignment
             1: optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get(),      # Cohesion
-            2: optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()   # Seperation
+            2: optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get(),  # Seperation
+            3: 1 # Obstacle avoidance
         }
 
-        f = switcher.get(rule_picker)
+        slider = switcher.get(rule_picker)
 
-        force = Behaviour(boid, flock, f, rule_picker).force   # Steering vector
+        steer.update(boid, flock, slider, rule_picker)  # Steering vector
 
-        if force.__abs__() > constants.MAX_FORCE:
-            force = (force / force.__abs__()) * constants.MAX_FORCE
+        if steer.force.__abs__() > constants.MAX_FORCE:
+            steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
 
-        boid.update(force)
+        boid.update(steer.force)
 
     # Write to labes
     # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))

@@ -132,10 +132,10 @@ class OffboardControl:
     def set_target(self, data):
         self.target = data
 
-    def set_target_xyz(self,x,y,z,delay):
+    def set_target_xyz(self, x, y, z, delay):
 
         if(delay > 0.1):
-            print(">> New setpoint: {} {} {}".format(x,y,z))
+            print(">> New setpoint: {} {} {}".format(x, y, z))
 
         self.target.pose.position.x = x
         self.target.pose.position.y = y
@@ -155,7 +155,7 @@ class OffboardControl:
     * cicle:
     * stop: 
     """
-    def switch2offboard(self,r):
+    def switch2offboard(self, r):
         print(">> Starting OFFBOARD mode")
 
         last_request = rospy.get_rostime()
@@ -163,7 +163,7 @@ class OffboardControl:
             now = rospy.get_rostime()
             if(now - last_request > rospy.Duration(5)):
                 print("Trying: OFFBOARD mode")
-                self.set_mode_client(base_mode=0, custom_mode="OFFBOARD")
+                self.set_mode_client(base_mode = 0, custom_mode = "OFFBOARD")
                 last_request = now
 
         tmp = Empty()
@@ -171,7 +171,7 @@ class OffboardControl:
 
         return {}
 
-    def arm(self,r):
+    def arm(self, r):
         print(">> Arming...")
         last_request = rospy.get_rostime()
         while not self.current_state.armed:
@@ -195,7 +195,7 @@ class OffboardControl:
         self.set_state("STOPPED")
 
     def start_circle(self, r):
-        self.t_circle = threading.Thread(target=self.circle)
+        self.t_circle = threading.Thread(target = self.circle)
         self.t_circle.start()
         print(">> Starting circle (Thread)")
 
@@ -213,11 +213,11 @@ class OffboardControl:
             self.set_state("CIRCLE")
 
             while self.state == "CIRCLE":
-                x = radius * cos(i*2*pi/sides)
-                y = radius * sin(i*2*pi/sides)
+                x = radius * cos(i * 2 * pi / sides)
+                y = radius * sin(i * 2 * pi / sides)
                 z = self.target.pose.position.z
 
-                self.set_target_xyz(x,y,z,delay)
+                self.set_target_xyz(x, y, z, delay)
 
                 i = i + 1
 
@@ -230,7 +230,7 @@ class OffboardControl:
     """
     Stop
     """
-    def stop(self,r):
+    def stop(self, r):
         self.set_state("STOP")
         return {}
 

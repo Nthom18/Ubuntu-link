@@ -58,6 +58,9 @@ class Vector2D:
 
     def __truediv__(self, scalar):
         """True division of the vector by a scalar."""
+        # Custom avoidance of division by zero
+        if scalar == 0:
+                return Vector2D(self.x / 0.001, self.y / 0.001)
         return Vector2D(self.x / scalar, self.y / scalar)
 
     def __mod__(self, scalar):
@@ -75,4 +78,14 @@ class Vector2D:
     def to_polar(self):
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), math.atan2(self.y, self.x)
+
+    # *******V******* Custom functions *******V******* #
+
+    def norm(self):
+        """Return unit vector."""
+        return self / self.__abs__()
+
+    def rotate(self, angle):
+        """Return the vector rotated by an angle in radians"""
+        return Vector2D(self.x * math.cos(angle) - self.y * math.sin(angle), self.x * math.sin(angle) + self.y * math.cos(angle))
 

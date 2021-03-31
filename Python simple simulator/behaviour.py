@@ -13,27 +13,31 @@ from vector import Vector2D
 from boid import Boid
 import constants
 
+FOV = 1/8
+MARGIN = 20
+
 class Behaviour():
 
-    def __init__(self, boid, flock, f, rule_picker):
+    def __init__(self, boid):
         self.boid = boid
         self.percieved = []
+        self.force = 0
 
+    def update(self, boid, flock, slider, rule_picker):
+        self.boid = boid
+        self.percieved.clear()
         for flockmate in flock:
             if flockmate.position.distance_to(self.boid.position) < self.boid.perception:
                 self.percieved.append(flockmate)
 
         switcher = {
-            0: f * self.alignment(),
-            1: f * self.cohesion(),
-            2: f * self.separation()
+            0: slider * self.alignment(),
+            1: slider * self.cohesion(),
+            2: slider * self.separation(),
+            3: self.obstacle_avoidance()
         }
 
         self.force = switcher.get(rule_picker)
-
-    def obstacle_avoidance(self):
-        a = 0
-
 
     def alignment(self):
         steering = Vector2D(*np.zeros(2))
@@ -94,5 +98,37 @@ class Behaviour():
             
             if avg_vector.__abs__() > 0:
                 steering = avg_vector - self.boid.velocity
+
+        return steering
+
+
+    def obstacle_avoidance(self):
+        steering = Vector2D(*np.zeros(2))
+        max_ray = 0
+        max_ray_index = 0
+        object_detected = False
+
+        if len(self.boid.lidar.sensorReadings) != 0:
+            step_angle = 360 / len(self.boid.lidar.sensorReadings)
+
+        fov = math.ceil(len(self.boid.lidar.sensorReadings) * FOV/2)
+        
+        left = self.boid.lidar.sensorReadings[-fov:]
+        right = self.boid.lidar.sensorReadings[:fov]
+        vision = left + right
+
+        for i, ray in enumerate(vision):
+            if ray < self.boid.perception - MARGIN:
+                object_detected = True
+            
+            if max_ray < ray:
+                max_ray = ray
+                max_ray_index = i
+    
+        if object_detected:
+            # Give ray reading a direction
+            dir = self.boid.velocity.rotate(math.radians((max_ray_index - fov) * step_angle))
+            steering = dir.norm() * constants.MAX_FORCE - self.boid.velocity
+            return steering 
 
         return steering

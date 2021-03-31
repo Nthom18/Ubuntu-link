@@ -4,9 +4,10 @@ _, SCREEN_HEIGHT = pyautogui.size()
 BOARD_SIZE = SCREEN_HEIGHT * 2/3
 
 # Boids attributes
+DRONE_RADIUS = 5
 PERCEPTION = SCREEN_HEIGHT / 8
-MAX_SPEED = 8
-MAX_FORCE = 0.5
+MAX_SPEED = 20
+MAX_FORCE = 5
 
 COLOUR_RED = "red"
 COLOUR_WHITE = "white"
