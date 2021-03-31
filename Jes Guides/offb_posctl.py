@@ -50,7 +50,7 @@ class OffboardControl:
         self.prev_state = self.current_state
 
         # Publishers
-        self.local_pos_pub = rospy.Publisher('/sdu_drone_1/mavros/setpoint_position/local', PoseStamped, queue_size=10)
+        self.local_pos_pub = rospy.Publisher('/sdu_drone_1/mavros/setpoint_position/local', PoseStamped, queue_size = 10)
 
         # Subscribers
         self.state_sub = rospy.Subscriber('/sdu_drone_1/mavros/state', State, self.cb_state)
@@ -75,7 +75,7 @@ class OffboardControl:
 
         self.rate = rospy.Rate(20.0) # MUST be more then 2Hz
 
-        self.t_run = threading.Thread(target=self.navigate)
+        self.t_run = threading.Thread(target = self.navigate)
         self.t_run.start()
         print(">> SetPoint controller is running (Thread)")
 
