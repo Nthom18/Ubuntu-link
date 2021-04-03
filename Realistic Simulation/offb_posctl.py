@@ -110,6 +110,7 @@ class OffboardControl:
         s_stop = rospy.Service('setpoint_controller/stop', Empty, self.stop)
         s_s2o = rospy.Service('setpoint_controller/switch2offboard', Empty, self.switch2offboard)
         s_circle = rospy.Service('setpoint_controller/circle', Empty, self.start_circle)
+        s_forward = rospy.Service('setpoint_controller/forward', Empty, self.start_forward)
 
         print("The SetPoint Controller is ready")
 
@@ -226,6 +227,35 @@ class OffboardControl:
                     i = 0
 
             self.set_state("RUNNING")
+
+
+    def start_forward(self, r):
+        self.t_forward = threading.Thread(target = self.forward)
+        self.t_forward.start()
+        print(">> Starting forward (Thread)")
+
+        return {}
+
+
+    def forward(self):
+        i = 1
+        delay = 0.5
+
+        if(self.state != "RUNNING"):
+            print(">> SetPoint controller is not running...")
+        else:
+            self.set_state("FORWARD")
+
+            while self.state == "FORWARD":
+                x = self.target.pose.position.x + i
+                y = self.target.pose.position.y
+                z = self.target.pose.position.z
+
+                self.set_target_xyz(x, y, z, delay)
+
+            self.set_state("RUNNING")
+        
+
 
     """
     Stop
