@@ -1,9 +1,9 @@
 """
-Rulebase for behaviour of boids
+Rulebase for behaviour of drones
 
 Author: Nicoline Louise Thomsen
 
-Followed tutorial: https://medium.com/better-programming/boids-simulating-birds-flock-behavior-in-python-9fff99375118
+Followed tutorial for boids behaviour: https://medium.com/better-programming/drones-simulating-birds-flock-behavior-in-python-9fff99375118
 """
 
 import math
@@ -18,16 +18,16 @@ MARGIN = 20
 
 class Behaviour():
 
-    def __init__(self, boid):
-        self.boid = boid
+    def __init__(self, drone):
+        self.drone = drone
         self.percieved = []
         self.force = 0
 
-    def update(self, boid, flock, slider, rule_picker):
-        self.boid = boid
+    def update(self, drone, flock, slider, rule_picker):
+        self.drone = drone
         self.percieved.clear()
         for flockmate in flock:
-            if flockmate.position.distance_to(self.boid.position) < self.boid.perception:
+            if flockmate.position.distance_to(self.drone.position) < self.drone.perception:
                 self.percieved.append(flockmate)
 
         switcher = {
@@ -51,7 +51,7 @@ class Behaviour():
         if total > 0:
             avg_vec /= total
             avg_vec = (avg_vec / avg_vec.__abs__()) * constants.MAX_SPEED
-            steering = avg_vec - self.boid.velocity
+            steering = avg_vec - self.drone.velocity
 
         return steering
 
@@ -67,12 +67,12 @@ class Behaviour():
 
         if total > 0:
             center_of_mass /= total
-            vec_to_com = center_of_mass - self.boid.position
+            vec_to_com = center_of_mass - self.drone.position
 
             if vec_to_com.__abs__() > 0:
                 vec_to_com = (vec_to_com / vec_to_com.__abs__()) * constants.MAX_SPEED
             
-            steering = vec_to_com - self.boid.velocity
+            steering = vec_to_com - self.drone.velocity
 
         return steering
 
@@ -82,10 +82,10 @@ class Behaviour():
         avg_vector = Vector2D(*np.zeros(2))
         total = 0
         for flockmate in self.percieved:
-            distance = flockmate.position.distance_to(self.boid.position)
+            distance = flockmate.position.distance_to(self.drone.position)
             
-            if self.boid.position != flockmate.position and distance < (self.boid.perception / 3):
-                diff = self.boid.position - flockmate.position
+            if self.drone.position != flockmate.position and distance < (self.drone.perception / 3):
+                diff = self.drone.position - flockmate.position
 
                 avg_vector += diff
                 total += 1
@@ -97,7 +97,7 @@ class Behaviour():
                 avg_vector = (avg_vector / steering.__abs__()) * constants.MAX_SPEED
             
             if avg_vector.__abs__() > 0:
-                steering = avg_vector - self.boid.velocity
+                steering = avg_vector - self.drone.velocity
 
         return steering
 
@@ -108,17 +108,17 @@ class Behaviour():
         max_ray_index = 0
         object_detected = False
 
-        if len(self.boid.lidar.sensorReadings) != 0:
-            step_angle = 360 / len(self.boid.lidar.sensorReadings)
+        if len(self.drone.lidar.sensorReadings) != 0:
+            step_angle = 360 / len(self.drone.lidar.sensorReadings)
 
-        fov = math.ceil(len(self.boid.lidar.sensorReadings) * FOV/2)
+        fov = math.ceil(len(self.drone.lidar.sensorReadings) * FOV/2)
         
-        left = self.boid.lidar.sensorReadings[-fov:]
-        right = self.boid.lidar.sensorReadings[:fov]
+        left = self.drone.lidar.sensorReadings[-fov:]
+        right = self.drone.lidar.sensorReadings[:fov]
         vision = left + right
 
         for i, ray in enumerate(vision):
-            if ray < self.boid.perception - MARGIN:
+            if ray < self.drone.perception - MARGIN:
                 object_detected = True
             
             if max_ray < ray:
@@ -127,8 +127,8 @@ class Behaviour():
     
         if object_detected:
             # Give ray reading a direction
-            dir = self.boid.velocity.rotate(math.radians((max_ray_index - fov) * step_angle))
-            steering = dir.norm() * constants.MAX_FORCE - self.boid.velocity
+            dir = self.drone.velocity.rotate(math.radians((max_ray_index - fov) * step_angle))
+            steering = dir.norm() * constants.MAX_FORCE - self.drone.velocity
             return steering 
 
         return steering
