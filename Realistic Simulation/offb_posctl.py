@@ -84,8 +84,8 @@ class OffboardControl:
         time.sleep(5)
         tmp = Empty()
         self.switch2offboard(tmp)
+        # rospy.spin()
 
-        rospy.spin()
 
     """
     Callbacks
@@ -263,6 +263,10 @@ class OffboardControl:
     def stop(self, r):
         self.set_state("STOP")
         return {}
+
+    def shutdown(self):
+        rospy.signal_shutdown("Session ended")
+
 
 if __name__ == '__main__':
     SPC = OffboardControl()
