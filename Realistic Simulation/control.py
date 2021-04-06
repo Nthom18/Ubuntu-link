@@ -39,6 +39,7 @@ print("--- Starting simulation ---")
 print('\n')
 
 # Initiate OFFBOARD CONTROL for all drone containers
+time.sleep(8)
 drone_controls = [offb.OffboardControl(container) for container in drone_containers]
 
 
