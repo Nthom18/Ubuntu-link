@@ -50,19 +50,19 @@ class OffboardControl:
         self.prev_state = self.current_state
 
         # Publishers
-        self.local_pos_pub = rospy.Publisher('/sdu_drone_1/mavros/setpoint_position/local', PoseStamped, queue_size = 10)
+        self.local_pos_pub = rospy.Publisher('/' + args[0] + '/mavros/setpoint_position/local', PoseStamped, queue_size = 10)
 
         # Subscribers
-        self.state_sub = rospy.Subscriber('/sdu_drone_1/mavros/state', State, self.cb_state)
-        self.sub_target = rospy.Subscriber('/sdu_drone_1/mavros/offbctrl/target', PoseStamped, self.cb_target)
+        self.state_sub = rospy.Subscriber('/' + args[0] + '/mavros/state', State, self.cb_state)
+        self.sub_target = rospy.Subscriber('/' + args[0] + '/mavros/offbctrl/target', PoseStamped, self.cb_target)
 
         # Services
-        self.arming_client = rospy.ServiceProxy('/sdu_drone_1/mavros/cmd/arming', CommandBool)
-        self.takeoff_client = rospy.ServiceProxy('/sdu_drone_1/mavros/cmd/takeoff', CommandTOL)
-        self.set_mode_client = rospy.ServiceProxy('/sdu_drone_1/mavros/set_mode', SetMode)
+        self.arming_client = rospy.ServiceProxy('/' + args[0] + '/mavros/cmd/arming', CommandBool)
+        self.takeoff_client = rospy.ServiceProxy('/' + args[0] + '/mavros/cmd/takeoff', CommandTOL)
+        self.set_mode_client = rospy.ServiceProxy('/' + args[0] + '/mavros/set_mode', SetMode)
 
         ## Create services
-        self.setpoint_controller_server()
+        self.setpoint_controller_server(args[0][-1])
 
         # Init msgs
         self.target = PoseStamped()
@@ -105,12 +105,12 @@ class OffboardControl:
     * s_s2o:
     * s_circle:
     """
-    def setpoint_controller_server(self):
-        s_arm = rospy.Service('setpoint_controller/arm', Empty, self.arm)
-        s_stop = rospy.Service('setpoint_controller/stop', Empty, self.stop)
-        s_s2o = rospy.Service('setpoint_controller/switch2offboard', Empty, self.switch2offboard)
-        s_circle = rospy.Service('setpoint_controller/circle', Empty, self.start_circle)
-        s_forward = rospy.Service('setpoint_controller/forward', Empty, self.start_forward)
+    def setpoint_controller_server(self, id):
+        s_arm = rospy.Service('setpoint_controller/arm' + id, Empty, self.arm)
+        s_stop = rospy.Service('setpoint_controller/stop' + id, Empty, self.stop)
+        s_s2o = rospy.Service('setpoint_controller/switch2offboard' + id, Empty, self.switch2offboard)
+        s_circle = rospy.Service('setpoint_controller/circle' + id, Empty, self.start_circle)
+        s_forward = rospy.Service('setpoint_controller/forward' + id, Empty, self.start_forward)
 
         print("The SetPoint Controller is ready")
 
