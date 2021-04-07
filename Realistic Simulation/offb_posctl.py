@@ -92,10 +92,10 @@ class OffboardControl:
     * cb_state
     * cb_target
     """
-    def cb_state(self,state):
+    def cb_state(self, state):
         self.current_state = state
 
-    def cb_target(self,data):
+    def cb_target(self, data):
         self.set_target(data)
 
     """
