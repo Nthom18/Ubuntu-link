@@ -15,7 +15,7 @@ from boid import Boid
 import constants
 from vector import Vector2D
 
-FLOCK_SIZE = 20
+FLOCK_SIZE = 1
 
 
 class BoardBlack(tk.Canvas):

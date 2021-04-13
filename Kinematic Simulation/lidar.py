@@ -52,16 +52,16 @@ class LiDAR():
             # self.makeDot(dot, 2)
 
         # DEBUGGING ------------------ Show fov dots
-        # if len(self.sensorReadings) != 0:
-        #     step_angle = 360 / len(self.sensorReadings)
+        if len(self.sensorReadings) != 0:
+            step_angle = 360 / len(self.sensorReadings)
 
-        # fov = math.ceil(len(self.sensorReadings) * 1/16)
-        # left = self.sensorReadings[-fov:]
-        # right = self.sensorReadings[:fov]
+        fov = math.ceil(len(self.sensorReadings) * 1/16)
+        left = self.sensorReadings[-fov:]
+        right = self.sensorReadings[:fov]
 
-        # for i, d in enumerate(left + right):
-        #     dir = self.oPos + self.oDir.rotate(math.radians((i - fov) * step_angle)) * d
-        #     self.makeDotBlue(dir, 2)
+        for i, d in enumerate(left + right):
+            dir = self.oPos + self.oDir.rotate(math.radians((i - fov) * step_angle)) * d
+            self.makeDotBlue(dir, 2)
         # -----------------------------
 
     def sphereTracing(self, dir):
