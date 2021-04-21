@@ -26,14 +26,14 @@ class LiDAR():
         self.sensorReadings = []
 
         # DEBUG visualization
-        # self.canvas = canvas
-        # self.distanceCircle = self.canvas.create_oval(0, 0, 0, 0, fill = constants.COLOUR_GREY, outline = "", tags = "grey")
+        self.canvas = canvas
+        self.distanceCircle = self.canvas.create_oval(0, 0, 0, 0, fill = constants.COLOUR_GREY, outline = "", tags = "grey")
 
 
     def update(self, originPoint):
         # DEBUG visualization
-        # self.canvas.delete("red")
-        # self.canvas.delete("grey")
+        self.canvas.delete("red")
+        self.canvas.delete("grey")
         # -------------------
 
         self.oPos = originPoint.position
@@ -55,14 +55,14 @@ class LiDAR():
         # if len(self.sensorReadings) != 0:
         #     step_angle = 360 / len(self.sensorReadings)
 
-        # fov = math.ceil(len(self.sensorReadings) * 1/16)
+        # fov = math.ceil(len(self.sensorReadings) * 1/8)
         # left = self.sensorReadings[-fov:]
         # right = self.sensorReadings[:fov]
 
         # for i, d in enumerate(left + right):
         #     dir = self.oPos + self.oDir.rotate(math.radians((i - fov) * step_angle)) * d
         #     self.makeDotBlue(dir, 2)
-        # -----------------------------
+        # # -----------------------------
 
     def sphereTracing(self, dir):
         p = self.oPos

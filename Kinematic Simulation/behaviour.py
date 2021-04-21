@@ -8,43 +8,47 @@ Followed tutorial for boids behaviour: https://medium.com/better-programming/dro
 
 import math
 import numpy as np
+import pyautogui
 from vector import Vector2D
 
 from boid import Boid
 import constants
 
-FOV = 1/8
+FOV = 1/4
 MARGIN = 20
 
 class Behaviour():
 
-    def __init__(self, drone):
-        self.drone = drone
-        self.percieved = []
+    def __init__(self):
+        self.drone = []
+        self.percieved_flockmates = []
         self.force = 0
 
-    def update(self, drone, flock, slider, rule_picker):
+    def update(self, drone, flock, target, slider, rule_picker):
         self.drone = drone
-        self.percieved.clear()
+        self.percieved_flockmates.clear()
         for flockmate in flock:
             if flockmate.position.distance_to(self.drone.position) < self.drone.perception:
-                self.percieved.append(flockmate)
+                self.percieved_flockmates.append(flockmate)
 
         switcher = {
-            0: slider * self.alignment(),
-            1: slider * self.cohesion(),
-            2: slider * self.separation(),
-            3: self.obstacle_avoidance()
+            0: slider[0] * self.alignment(),
+            1: slider[1] * self.cohesion(),
+            2: slider[2] * self.separation()
         }
+        
+        # Priority rule selection
+        if self.obstacle_avoidance().__abs__() > 0: self.force = self.obstacle_avoidance()
+        else: self.force = switcher.get(rule_picker) + self.seek(target)
 
-        self.force = switcher.get(rule_picker)
+
 
     def alignment(self):
         steering = Vector2D(*np.zeros(2))
         avg_vec = Vector2D(*np.zeros(2))
         total = 0
 
-        for flockmate in self.percieved:
+        for flockmate in self.percieved_flockmates:
             avg_vec += flockmate.velocity
             total += 1
         
@@ -61,7 +65,7 @@ class Behaviour():
         center_of_mass = Vector2D(*np.zeros(2))
         total = 0
 
-        for flockmate in self.percieved:
+        for flockmate in self.percieved_flockmates:
             center_of_mass += flockmate.position
             total += 1
 
@@ -81,7 +85,7 @@ class Behaviour():
         steering = Vector2D(*np.zeros(2))
         avg_vector = Vector2D(*np.zeros(2))
         total = 0
-        for flockmate in self.percieved:
+        for flockmate in self.percieved_flockmates:
             distance = flockmate.position.distance_to(self.drone.position)
             
             if self.drone.position != flockmate.position and distance < (self.drone.perception / 3):
@@ -115,20 +119,40 @@ class Behaviour():
         
         left = self.drone.lidar.sensorReadings[-fov:]
         right = self.drone.lidar.sensorReadings[:fov]
-        vision = left + right
 
-        for i, ray in enumerate(vision):
+
+        # Check rays
+        for i, ray in enumerate(left):
             if ray < self.drone.perception - MARGIN:
                 object_detected = True
             
             if max_ray < ray:
                 max_ray = ray
                 max_ray_index = i
+        
+        right.reverse()
+        for i, ray in enumerate(right):
+            if ray < self.drone.perception - MARGIN:
+                object_detected = True
+            
+            if max_ray < ray:
+                max_ray = ray
+                max_ray_index = 2 * len(right) - 1 - i  # Offset and reverse indexing
     
         if object_detected:
             # Give ray reading a direction
             dir = self.drone.velocity.rotate(math.radians((max_ray_index - fov) * step_angle))
-            steering = dir.norm() * constants.MAX_FORCE - self.drone.velocity
-            return steering 
+            steering = dir.norm() - self.drone.velocity.norm()
+            return steering.norm() * constants.MAX_FORCE 
 
         return steering
+
+    def seek(self, target):
+        steering = Vector2D(*np.zeros(2))
+        dir = Vector2D(*np.zeros(2))
+
+        dir = Vector2D(*target) - self.drone.position
+        
+        steering = dir.norm() - self.drone.velocity.norm()
+        return steering.norm() * constants.MAX_FORCE 
+

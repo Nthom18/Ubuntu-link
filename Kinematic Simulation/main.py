@@ -30,6 +30,9 @@ class BoardBlack(tk.Canvas):
 
         # Circular obstacles x, y, r
         self.obstacleList = [[150, 200, 50], [500, 400, 100], [900, 900, 200]]
+        # self.obstacleList = [[200, 200, 20], [300, 200, 20], [400, 200, 20],
+        #                     [250, 300, 20], [350, 300, 20], [450, 300, 20],
+        #                     [200, 400, 20], [300, 400, 20], [400, 400, 20]]
         self.drawObstacles()
 
     def drawObstacles(self):
@@ -115,28 +118,26 @@ optFrame = OptionFrame()
 flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(FLOCK_SIZE)]
 # flock = [Boid(boidFrame.board, 550, 600)]
 
-for boid in flock:
-    steer = Behaviour(boid)   # Steering vector
+steer = Behaviour()   # Steering vector
 
+number_of_rules = 3
 rule_picker = 0
+slider_values = np.zeros(3)
 
 while True:
-    rule_picker = (rule_picker + 1) % 4
+    # Cursor position
+    cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
+
+    rule_picker = (rule_picker + 1) % number_of_rules
     
     # Boid control
     for boid in flock:
 
-        # Using sliders to weigh values, only update one rule at a time for each time-step
-        switcher = {
-            0: optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get(),    # Alignment
-            1: optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get(),      # Cohesion
-            2: optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get(),  # Seperation
-            3: 1 # Obstacle avoidance
-        }
+        slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
+        slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
+        slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
 
-        slider = switcher.get(rule_picker)
-
-        steer.update(boid, flock, slider, rule_picker)  # Steering vector
+        steer.update(boid, flock, cursor_pos, slider_values, rule_picker)  # Steering vector
 
         if steer.force.__abs__() > constants.MAX_FORCE:
             steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
@@ -145,6 +146,8 @@ while True:
 
     # Write to labes
     # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
+
+
 
     root.update_idletasks()
     root.update()
