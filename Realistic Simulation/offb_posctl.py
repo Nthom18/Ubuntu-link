@@ -80,7 +80,6 @@ class OffboardControl:
         print(">> SetPoint controller is running (Thread)")
 
         # Spin until the node is stopped
-
         time.sleep(5)
         tmp = Empty()
         self.switch2offboard(tmp)
