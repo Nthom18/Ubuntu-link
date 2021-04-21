@@ -8,7 +8,6 @@ Followed tutorial for boids behaviour: https://medium.com/better-programming/dro
 
 import math
 import numpy as np
-import pyautogui
 from vector import Vector2D
 
 from boid import Boid
@@ -154,5 +153,6 @@ class Behaviour():
         dir = Vector2D(*target) - self.drone.position
         
         steering = dir.norm() - self.drone.velocity.norm()
+
         return steering.norm() * constants.MAX_FORCE 
 

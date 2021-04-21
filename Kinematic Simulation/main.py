@@ -13,6 +13,7 @@ import tkinter as tk
 from behaviour import Behaviour
 from boid import Boid
 import constants
+from logger import Logger
 from vector import Vector2D
 
 FLOCK_SIZE = 5
@@ -120,13 +121,18 @@ flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ 
 
 steer = Behaviour()   # Steering vector
 
+frame = -1
 number_of_rules = 3
 rule_picker = 0
 slider_values = np.zeros(3)
+log = Logger()
 
 while True:
+    frame += 1
+    
     # Cursor position
     cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
+    dist_to_target = 0
 
     rule_picker = (rule_picker + 1) % number_of_rules
     
@@ -143,6 +149,11 @@ while True:
             steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
 
         boid.update(steer.force)
+
+        dist_to_target += (boid.position - Vector2D(*cursor_pos)).__abs__()
+
+    avg_dist_to_target = dist_to_target / len(flock)
+    log.log_to_file(frame, avg_dist_to_target)
 
     # Write to labes
     # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
