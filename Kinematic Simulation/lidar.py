@@ -26,14 +26,14 @@ class LiDAR():
         self.sensorReadings = []
 
         # DEBUG visualization
-        self.canvas = canvas
-        self.distanceCircle = self.canvas.create_oval(0, 0, 0, 0, fill = constants.COLOUR_GREY, outline = "", tags = "grey")
+        # self.canvas = canvas
+        # self.distanceCircle = self.canvas.create_oval(0, 0, 0, 0, fill = constants.COLOUR_GREY, outline = "", tags = "grey")
 
 
     def update(self, originPoint):
         # DEBUG visualization
-        self.canvas.delete("red")
-        self.canvas.delete("grey")
+        # self.canvas.delete("red")
+        # self.canvas.delete("grey")
         # -------------------
 
         self.oPos = originPoint.position
