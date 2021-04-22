@@ -1,0 +1,40 @@
+
+rostopic echo /sdu_drone_0/mavros/global_position/global
+
+header: 
+  seq: 218
+  stamp: 
+    secs: 162
+    nsecs: 597408180
+  frame_id: "base_link"
+status: 
+  status: 0
+  service: 1
+latitude: 55.4719763
+longitude: 10.3247923
+altitude: 48.73236490480533
+position_covariance: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+position_covariance_type: 2
+
+
+
+
+
+
+rostopic echo /sdu_drone_1/mavros/global_position/global
+
+header: 
+  seq: 282
+  stamp: 
+    secs: 179
+    nsecs: 183020393
+  frame_id: "base_link"
+status: 
+  status: 0
+  service: 1
+latitude: 55.471967
+longitude: 10.3247944
+altitude: 48.69837573635202
+position_covariance: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+position_covariance_type: 2
+
