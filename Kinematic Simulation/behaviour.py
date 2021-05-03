@@ -43,7 +43,10 @@ class Behaviour():
         else:
             # Stop when goalsonze is reached
             if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
-                self.force = Vector2D(*np.zeros(2)) 
+                if self.drone.velocity.__abs__() != 0:
+                    self.force = - self.drone.velocity * 0.05
+                else:
+                    self.force = Vector2D(*np.zeros(2)) 
             elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
                 self.force = self.seek(target)
             else: self.force = switcher.get(rule_picker) + self.seek(target)
