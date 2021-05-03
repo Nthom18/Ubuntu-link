@@ -28,12 +28,12 @@ class BoardBlack(tk.Canvas):
         self.pack(side = tk.LEFT)
 
         # Circular obstacles x, y, r
-        self.obstacleList = [[150, 200, 50], [500, 400, 100], [900, 900, 200]]
+        # self.obstacleList = [[150, 200, 50], [500, 400, 100], [900, 900, 200]]
         # self.obstacleList = [[200, 200, 20], [300, 200, 20], [400, 200, 20],
         #                     [250, 300, 20], [350, 300, 20], [450, 300, 20],
         #                     [200, 400, 20], [300, 400, 20], [400, 400, 20]]
-        # self.obstacleList = [[-930, constants.BOARD_SIZE/2, 1000], [constants.BOARD_SIZE + 930, constants.BOARD_SIZE/2, 1000], 
-        #                     [200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [300, 450, 30], [175, 500, 30]]
+        self.obstacleList = [[-1435, constants.BOARD_SIZE/2, 1500], [constants.BOARD_SIZE + 1435, constants.BOARD_SIZE/2, 1500], 
+                            [200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [300, 450, 30], [175, 500, 30], [700, 400, 70]]
         self.drawObstacles()
 
     def drawObstacles(self):

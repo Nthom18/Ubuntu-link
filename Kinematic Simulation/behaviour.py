@@ -16,6 +16,8 @@ import constants
 FOV = 1/6
 MARGIN = 20
 
+STOP_FORCE = 0.5
+
 class Behaviour():
 
     def __init__(self):
@@ -44,11 +46,13 @@ class Behaviour():
             # Stop when goalsonze is reached
             if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
                 if self.drone.velocity.__abs__() != 0:
-                    self.force = - self.drone.velocity * 0.05
+                    self.force = - self.drone.velocity * STOP_FORCE
                 else:
                     self.force = Vector2D(*np.zeros(2)) 
+            # Only focus on seek if goalzone is near
             elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
                 self.force = self.seek(target)
+            # Normal operation if goalzone is far
             else: self.force = switcher.get(rule_picker) + self.seek(target)
 
 
