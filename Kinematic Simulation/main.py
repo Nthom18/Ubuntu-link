@@ -16,8 +16,6 @@ import constants
 from logger import Logger
 from vector import Vector2D
 
-FLOCK_SIZE = 5
-
 
 class BoardBlack(tk.Canvas):
 
@@ -34,6 +32,8 @@ class BoardBlack(tk.Canvas):
         # self.obstacleList = [[200, 200, 20], [300, 200, 20], [400, 200, 20],
         #                     [250, 300, 20], [350, 300, 20], [450, 300, 20],
         #                     [200, 400, 20], [300, 400, 20], [400, 400, 20]]
+        # self.obstacleList = [[-930, constants.BOARD_SIZE/2, 1000], [constants.BOARD_SIZE + 930, constants.BOARD_SIZE/2, 1000], 
+        #                     [200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [300, 450, 30], [175, 500, 30]]
         self.drawObstacles()
 
     def drawObstacles(self):
@@ -116,13 +116,13 @@ boidFrame = BoidFrame()
 optFrame = OptionFrame()
 
 # Spawn boids
-flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(FLOCK_SIZE)]
+flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
 # flock = [Boid(boidFrame.board, 550, 600)]
 
 steer = Behaviour()   # Steering vector
 
 frame = -1
-number_of_rules = 3
+number_of_rules = 2
 rule_picker = 0
 slider_values = np.zeros(3)
 log = Logger()

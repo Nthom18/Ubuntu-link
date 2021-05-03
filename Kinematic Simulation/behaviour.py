@@ -13,7 +13,7 @@ from vector import Vector2D
 from boid import Boid
 import constants
 
-FOV = 1/4
+FOV = 1/6
 MARGIN = 20
 
 class Behaviour():
@@ -27,19 +27,26 @@ class Behaviour():
         self.drone = drone
         self.percieved_flockmates.clear()
         for flockmate in flock:
-            if flockmate.position.distance_to(self.drone.position) < self.drone.perception:
+            if 0 < flockmate.position.distance_to(self.drone.position) < self.drone.perception:
                 self.percieved_flockmates.append(flockmate)
 
         switcher = {
-            0: slider[0] * self.alignment(),
-            1: slider[1] * self.cohesion(),
-            2: slider[2] * self.separation()
+            0: self.alignment(),
+            1: self.cohesion()
         }
         
         # Priority rule selection
         if self.obstacle_avoidance().__abs__() > 0: self.force = self.obstacle_avoidance()
-        else: self.force = switcher.get(rule_picker) + self.seek(target)
-
+        
+        elif self.separation().__abs__() > 0: self.force = self.separation()
+        
+        else:
+            
+            if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
+                self.force = Vector2D(*np.zeros(2)) 
+            elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
+                self.force = self.seek(target)
+            else: self.force = switcher.get(rule_picker) + self.seek(target)
 
 
     def alignment(self):
@@ -53,8 +60,10 @@ class Behaviour():
         
         if total > 0:
             avg_vec /= total
-            avg_vec = (avg_vec / avg_vec.__abs__()) * constants.MAX_SPEED
             steering = avg_vec - self.drone.velocity
+
+        if steering.__abs__() > constants.MAX_FORCE:
+            steering = steering.norm() * constants.MAX_FORCE
 
         return steering
 
@@ -71,11 +80,10 @@ class Behaviour():
         if total > 0:
             center_of_mass /= total
             vec_to_com = center_of_mass - self.drone.position
-
-            if vec_to_com.__abs__() > 0:
-                vec_to_com = (vec_to_com / vec_to_com.__abs__()) * constants.MAX_SPEED
-            
             steering = vec_to_com - self.drone.velocity
+
+        if steering.__abs__() > constants.MAX_FORCE:
+            steering = steering.norm() * constants.MAX_FORCE
 
         return steering
 
@@ -84,10 +92,11 @@ class Behaviour():
         steering = Vector2D(*np.zeros(2))
         avg_vector = Vector2D(*np.zeros(2))
         total = 0
+        
         for flockmate in self.percieved_flockmates:
             distance = flockmate.position.distance_to(self.drone.position)
             
-            if self.drone.position != flockmate.position and distance < (self.drone.perception / 3):
+            if distance < (self.drone.perception / 4):
                 diff = self.drone.position - flockmate.position
 
                 avg_vector += diff
@@ -96,23 +105,59 @@ class Behaviour():
         if total > 0:
             avg_vector /= total
 
-            if steering.__abs__() > 0:
-                avg_vector = (avg_vector / steering.__abs__()) * constants.MAX_SPEED
+            # if steering.__abs__() > 0:
+                # avg_vector = avg_vector.norm() * constants.MAX_SPEED
             
             if avg_vector.__abs__() > 0:
                 steering = avg_vector - self.drone.velocity
 
-        return steering
+        # if steering.__abs__() > constants.MAX_FORCE:
+        #     steering = steering.norm() * constants.MAX_FORCE
+
+        return steering.norm() * constants.MAX_FORCE
 
 
     def obstacle_avoidance(self):
+        step_angle = 0
+        if len(self.drone.lidar.sensorReadings) != 0:
+            step_angle = 360 / len(self.drone.lidar.sensorReadings)
+
+        near = self.drone.perception - MARGIN
+        too_close = 4 * constants.DRONE_RADIUS
+
+
+        return self.avoid(too_close, step_angle) + self.evade(too_close, near, step_angle, )
+
+    # Flies directly in the oposite direction of close objects
+    def avoid(self, too_close, step_angle):
+        steering = Vector2D(*np.zeros(2))
+        avg_vec = Vector2D(*np.zeros(2))
+        total = 0
+
+        for index, ray in enumerate(self.drone.lidar.sensorReadings):
+            # if the drone is too close to object (four times its own radius from its centerpoint)
+            if ray < too_close:
+                avg_vec += self.drone.velocity.rotate(math.radians(index * step_angle))
+                total += 1
+
+        if avg_vec.__abs__() != 0:
+            avg_vec /= total
+            avg_vec = avg_vec.norm() * constants.MAX_SPEED
+
+        if total > 0:
+            # Fly away!
+            steering = -avg_vec - self.drone.velocity
+            return steering.norm() * constants.MAX_FORCE 
+        
+        return steering
+
+
+    # Flying around upcomming obstacles
+    def evade(self, too_close, near, step_angle):
         steering = Vector2D(*np.zeros(2))
         max_ray = 0
         max_ray_index = 0
-        object_detected = False
-
-        if len(self.drone.lidar.sensorReadings) != 0:
-            step_angle = 360 / len(self.drone.lidar.sensorReadings)
+        front_object_detected = False
 
         fov = math.ceil(len(self.drone.lidar.sensorReadings) * FOV/2)
         
@@ -120,10 +165,10 @@ class Behaviour():
         right = self.drone.lidar.sensorReadings[:fov]
 
 
-        # Check rays
+        # Check rays, they have to be within range and not too close to be evaded
         for i, ray in enumerate(left):
-            if ray < self.drone.perception - MARGIN:
-                object_detected = True
+            if too_close < ray < near:
+                front_object_detected = True
             
             if max_ray < ray:
                 max_ray = ray
@@ -131,14 +176,14 @@ class Behaviour():
         
         right.reverse()
         for i, ray in enumerate(right):
-            if ray < self.drone.perception - MARGIN:
-                object_detected = True
+            if too_close < ray < near:
+                front_object_detected = True
             
             if max_ray < ray:
                 max_ray = ray
                 max_ray_index = 2 * len(right) - 1 - i  # Offset and reverse indexing
     
-        if object_detected:
+        if front_object_detected:
             # Give ray reading a direction
             dir = self.drone.velocity.rotate(math.radians((max_ray_index - fov) * step_angle))
             steering = dir.norm() - self.drone.velocity.norm()
@@ -146,13 +191,13 @@ class Behaviour():
 
         return steering
 
+
     def seek(self, target):
         steering = Vector2D(*np.zeros(2))
         dir = Vector2D(*np.zeros(2))
 
         dir = Vector2D(*target) - self.drone.position
-        
         steering = dir.norm() - self.drone.velocity.norm()
-
+ 
         return steering.norm() * constants.MAX_FORCE 
 

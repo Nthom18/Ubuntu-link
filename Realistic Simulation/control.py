@@ -57,10 +57,16 @@ root.mainloop()
 
 
 
-# Test service call
-for i in range(SWARM_SIZE):
-    bashCmd = "rosservice call /setpoint_controller/forward" + str(i)
-    process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+# # Test service call
+# for i in range(SWARM_SIZE):
+#     bashCmd = "rosservice call /setpoint_controller/forward" + str(i)
+#     process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+# time.sleep(10)
+
+bashCmd = "rosservice call /setpoint_controller/forward" + str(0)
+process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+bashCmd = "rosservice call /setpoint_controller/backward" + str(1)
+process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 time.sleep(10)
 
 

@@ -83,7 +83,9 @@ class Vector2D:
 
     def norm(self):
         """Return unit vector."""
-        return self / self.__abs__()
+        if self.__abs__() > 0:
+            return self / self.__abs__()
+        else: return self
 
     def rotate(self, angle):
         """Return the vector rotated by an angle in radians"""
