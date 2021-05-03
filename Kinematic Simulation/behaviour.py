@@ -41,7 +41,7 @@ class Behaviour():
         elif self.separation().__abs__() > 0: self.force = self.separation()
         
         else:
-            
+            # Stop when goalsonze is reached
             if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
                 self.force = Vector2D(*np.zeros(2)) 
             elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:

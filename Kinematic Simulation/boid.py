@@ -34,7 +34,10 @@ class Boid():
 
     def update(self, force):
 
-        self.acceleration += force
+        if force.__abs__() ==  0:
+            self.acceleration -= self.velocity * 0.05
+        else:
+            self.acceleration += force
         self.velocity += self.acceleration
         self.position += self.velocity
         
