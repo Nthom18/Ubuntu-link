@@ -18,11 +18,12 @@ RESOLUTION = 1 / 8
 
 class LiDAR():
 
-    def __init__(self, originPoint, obstacleList, canvas):
+    def __init__(self, originPoint, obstacleList_circle, obstacleList_box, canvas):
         self.oPos = originPoint.position
         self.oDir = originPoint.velocity.norm()
         self.range = originPoint.perception
-        self.obstacles = obstacleList
+        self.obstacles_circle = obstacleList_circle
+        self.obstacles_box = obstacleList_box
         self.sensorReadings = []
 
         # DEBUG visualization
@@ -84,13 +85,18 @@ class LiDAR():
     def signedDistToScene(self, p):
         distToScene = constants.BOARD_SIZE
 
-        for circle in self.obstacles:
+        for circle in self.obstacles_circle:
             distToCircle = self.signedDistToCircle(p, circle)
             distToScene = min(distToCircle, distToScene)
+
+        # for box in self.obstacles_box:
+        #     distToBox = self.signedDistToBox(p, box)
+        #     distToScene = min(distToBox, distToScene)
 
         # # DEBUG
         # self.drawDistance(distToScene)
         # print(distToScene)
+
         return distToScene
 
 
@@ -98,6 +104,21 @@ class LiDAR():
         centre = Vector2D(circle[0], circle[1])
         radius = circle[2]
         return self.length(centre - p) - radius
+
+    def signedDistToBox(self, p, box):
+        centre = Vector2D(box[0], box[1])
+        size = Vector2D(box[2], box[3])
+        offset = ((centre - p).positive() - size).__abs__()
+
+        # d = np.sqrt(max(centre.x - size.x/2 - p.x, 0)**2 + max(centre.y - size.y/2 - p.y, 0)**2)
+        
+        # dst from point outside box to edge (0 if inside box)
+        unsignedDst = max(offset, 0)
+        # -dst from point inside box to edge (0 if outside box)
+        # dstInsideBox = max(min(offset, 0))
+
+        return unsignedDst
+        # return constants.BOARD_SIZE
 
 
     def length(self, v):
