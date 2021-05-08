@@ -81,6 +81,12 @@ class Vector2D:
 
     # *******V******* Custom functions *******V******* #
 
+    def pow(self, power):
+        return Vector2D(self.x**power, self.y**power)
+
+    def positive(self):
+        return Vector2D(abs(self.x), abs(self.y))
+
     def norm(self):
         """Return unit vector."""
         if self.__abs__() > 0:

@@ -27,24 +27,50 @@ class BoardBlack(tk.Canvas):
 
         self.pack(side = tk.LEFT)
 
+        # DRAW OBSTACLES
+
         # Circular obstacles x, y, r
-        self.obstacleList = [[150, 200, 50], [500, 400, 100], [900, 900, 200]]
+        # self.obstacleList = [[150, 200, 50], [500, 400, 100], [900, 900, 200]]
         # self.obstacleList = [[200, 200, 20], [300, 200, 20], [400, 200, 20],
         #                     [250, 300, 20], [350, 300, 20], [450, 300, 20],
         #                     [200, 400, 20], [300, 400, 20], [400, 400, 20]]
-        # self.obstacleList = [[-930, constants.BOARD_SIZE/2, 1000], [constants.BOARD_SIZE + 930, constants.BOARD_SIZE/2, 1000], 
-        #                     [200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [300, 450, 30], [175, 500, 30]]
-        self.drawObstacles()
+        self.obstacleList_circle = [[-1435, constants.BOARD_SIZE/2, 1500], [constants.BOARD_SIZE + 1435, constants.BOARD_SIZE/2, 1500], 
+                            [200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [280, 440, 30], [175, 500, 30], [700, 400, 70]]
+        # self.obstacleList_circle = []
 
-    def drawObstacles(self):
-
-        for x, y, r in self.obstacleList:
-            x0 = x - r
-            y0 = y - r
-            x1 = x + r
-            y1 = y + r       
+        # self.obstacleList_box = [[400, 400, 50, 100]]
+        self.obstacleList_box = []
         
-            self.create_oval(x0, y0, x1, y1, fill = constants.COLOUR_ORANGE, outline = "")
+        for x, y, r in self.obstacleList_circle:
+            self.drawObstacles_circle(x, y, r, constants.COLOUR_ORANGE) 
+        
+        self.drawObstacles_box()
+
+        # DRAW TARGET
+        self.target = [constants.BOARD_SIZE/2, constants.BOARD_SIZE - 100]
+        self.drawObstacles_circle(*self.target, 10, "green")
+
+    def drawObstacles_circle(self, x, y, r, colour):
+        # x = circle[0]
+        # y = circle[1]
+        # r = circle[2]
+
+        x0 = x - r
+        y0 = y - r
+        x1 = x + r
+        y1 = y + r       
+        
+        self.create_oval(x0, y0, x1, y1, fill = colour, outline = "")
+
+    def drawObstacles_box(self):
+
+        for x, y, w, h in self.obstacleList_box:
+            x0 = x - w/2
+            y0 = y - h/2
+            x1 = x + w/2
+            y1 = y + h/2       
+        
+            self.create_rectangle(x0, y0, x1, y1, fill = constants.COLOUR_ORANGE, outline = "")
 
 
 class BoidFrame(tk.Frame):
@@ -116,8 +142,8 @@ boidFrame = BoidFrame()
 optFrame = OptionFrame()
 
 # Spawn boids
-flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
-# flock = [Boid(boidFrame.board, 550, 600)]
+# flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
+flock = [Boid(boidFrame.board, 200, 50), Boid(boidFrame.board, 250, 50), Boid(boidFrame.board, 300, 50), Boid(boidFrame.board, 350, 50), Boid(boidFrame.board, 400, 50)]
 
 steer = Behaviour()   # Steering vector
 
@@ -132,6 +158,9 @@ while True:
     
     # Cursor position
     cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
+    
+    # target = cursor_pos
+    target = boidFrame.board.target
     dist_to_target = 0
 
     rule_picker = (rule_picker + 1) % number_of_rules
@@ -139,21 +168,22 @@ while True:
     # Boid control
     for boid in flock:
 
-        slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
-        slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
-        slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
+        # slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
+        # slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
+        # slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
 
-        steer.update(boid, flock, cursor_pos, slider_values, rule_picker)  # Steering vector
+        steer.update(boid, flock, target, rule_picker)  # Steering vector
 
         if steer.force.__abs__() > constants.MAX_FORCE:
             steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
 
         boid.update(steer.force)
 
-        dist_to_target += (boid.position - Vector2D(*cursor_pos)).__abs__()
+        dist_to_target += (boid.position - Vector2D(*target)).__abs__()
 
-    avg_dist_to_target = dist_to_target / len(flock)
-    log.log_to_file(frame, avg_dist_to_target)
+    if len(flock) > 0:
+        avg_dist_to_target = dist_to_target / len(flock)
+        log.log_to_file(frame, avg_dist_to_target)
 
     # Write to labes
     # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))

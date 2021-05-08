@@ -16,6 +16,8 @@ import constants
 FOV = 1/6
 MARGIN = 20
 
+STOP_FORCE = 0.5
+
 class Behaviour():
 
     def __init__(self):
@@ -23,7 +25,7 @@ class Behaviour():
         self.percieved_flockmates = []
         self.force = 0
 
-    def update(self, drone, flock, target, slider, rule_picker):
+    def update(self, drone, flock, target, rule_picker):
         self.drone = drone
         self.percieved_flockmates.clear()
         for flockmate in flock:
@@ -36,17 +38,24 @@ class Behaviour():
         }
         
         # Priority rule selection
-        if self.obstacle_avoidance().__abs__() > 0: self.force = self.obstacle_avoidance()
-        
-        elif self.separation().__abs__() > 0: self.force = self.separation()
+        if self.obstacle_avoidance().__abs__() > 0 or self.separation().__abs__() > 0: 
+            self.force = self.obstacle_avoidance() + self.separation()
         
         else:
-            
+            # Stop when goalsonze is reached
             if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
-                self.force = Vector2D(*np.zeros(2)) 
+                if self.drone.velocity.__abs__() != 0:
+                    self.force = - self.drone.velocity * STOP_FORCE
+                else:
+                    self.force = Vector2D(*np.zeros(2)) 
+            # Only focus on seek if goalzone is near
             elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
                 self.force = self.seek(target)
+            # Normal operation if goalzone is far
             else: self.force = switcher.get(rule_picker) + self.seek(target)
+
+        if self.drone.collision_flag == True:
+            flock.remove(self.drone)
 
 
     def alignment(self):
@@ -102,6 +111,11 @@ class Behaviour():
                 avg_vector += diff
                 total += 1
 
+            # COLLISION CHECK
+            if distance < constants.DRONE_RADIUS:
+                self.drone.collision_flag = True
+                flockmate.collision_flag = True
+
         if total > 0:
             avg_vector /= total
 
@@ -139,6 +153,10 @@ class Behaviour():
             if ray < too_close:
                 avg_vec += self.drone.velocity.rotate(math.radians(index * step_angle))
                 total += 1
+            
+            # COLLISION CHECK
+            if ray < constants.DRONE_RADIUS:
+                self.drone.collision_flag = True
 
         if avg_vec.__abs__() != 0:
             avg_vec /= total
