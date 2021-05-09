@@ -15,7 +15,6 @@ import constants
 
 FOV = 1/6
 MARGIN = 20
-
 STOP_FORCE = 0.5
 
 class Behaviour():
@@ -41,6 +40,10 @@ class Behaviour():
         if self.obstacle_avoidance().__abs__() > 0 or self.separation().__abs__() > 0: 
             self.force = self.obstacle_avoidance() + self.separation()
         
+        # Random flight
+        # else: self.force = switcher.get(rule_picker)
+
+        # Case d)
         else:
             # Stop when goalsonze is reached
             if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
@@ -129,6 +132,7 @@ class Behaviour():
         #     steering = steering.norm() * constants.MAX_FORCE
 
         return steering.norm() * constants.MAX_FORCE
+        # return steering
 
 
     def obstacle_avoidance(self):

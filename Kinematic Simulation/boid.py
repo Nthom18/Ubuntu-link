@@ -19,13 +19,15 @@ class Boid():
     def __init__(self, canvas, x, y):
         self.canvas = canvas
         self.hitbox = DOT_SIZE
-        self.colour = constants.COLOUR_WHITE
+        self.colour = constants.COLOUR_BOID
 
         self.perception = constants.PERCEPTION
         self.position = Vector2D(x, y)
-        # self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
-        # self.velocity = Vector2D(0, -1) * constants.MAX_SPEED
-        self.velocity = Vector2D(*np.zeros(2))
+        
+        self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
+
+        # For specific cases:
+        # self.velocity = Vector2D(*np.zeros(2))
         self.acceleration = Vector2D(*np.zeros(2))
 
         self.dot = self.makeDot(init = True)
@@ -53,7 +55,7 @@ class Boid():
         self.lidar.update(self)
 
         if self.collision_flag == True:
-            self.canvas.itemconfig(self.dot, fill = 'red')
+            self.canvas.itemconfig(self.dot, fill = constants.COLOUR_DEAD)
 
 
     def makeDot(self, init):
