@@ -55,7 +55,7 @@ class OffboardControl:
         # Subscribers
         self.state_sub = rospy.Subscriber('/' + args[0] + '/mavros/state', State, self.cb_state)
         self.sub_target = rospy.Subscriber('/' + args[0] + '/mavros/offbctrl/target', PoseStamped, self.cb_target)
-
+        
         # Services
         self.arming_client = rospy.ServiceProxy('/' + args[0] + '/mavros/cmd/arming', CommandBool)
         self.takeoff_client = rospy.ServiceProxy('/' + args[0] + '/mavros/cmd/takeoff', CommandTOL)

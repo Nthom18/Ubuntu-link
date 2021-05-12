@@ -45,7 +45,7 @@ drone_controls = [offb.OffboardControl(container) for container in drone_contain
 print('\n')
 print("--- Startup complete ---")
 
-
+print(drone_controls[0].target)
 
 # Tkinter windown for shutdown - PAUSES PROGRAM UNTIL BUTTON PRESS
 root = tkinter.Tk()
@@ -69,6 +69,7 @@ bashCmd = "rosservice call /setpoint_controller/backward" + str(1)
 process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 time.sleep(10)
 
+print(drone_controls[0].target)
 
 
 
