@@ -11,6 +11,13 @@ import tkinter
 
 import offb_posctl as offb
 
+from kinematic_simulation_copy.behaviour import Behaviour
+from drone import Drone
+import kinematic_simulation_copy.constants
+from kinematic_simulation_copy.logger import Logger
+from kinematic_simulation_copy.vector import Vector2D
+
+
 SWARM_SIZE = 2
 
 # Start containers
@@ -26,7 +33,7 @@ drone_containers = []
 
 for i in range(SWARM_SIZE):
     drone_containers.append("sdu_drone_" + str(i))
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone " + str(i) + " -1 -" + str(i)
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone " + str(i) + " 0 " + str(i)
     process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
     # output, error = process.communicate()
     time.sleep(3)
@@ -40,19 +47,37 @@ print('\n')
 
 # Initiate OFFBOARD CONTROL for all drone containers
 drone_controls = [offb.OffboardControl(container) for container in drone_containers]
-
+flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
 print('\n')
 print("--- Startup complete ---")
 
-print(drone_controls[0].target)
 
-# Tkinter windown for shutdown - PAUSES PROGRAM UNTIL BUTTON PRESS
+# Tkinter windown for shutdown - PAUSES PROGRAM UNTIL BUTTON PRESS (hover over button)
 root = tkinter.Tk()
 root.resizable(width = False, height = False)
-btn = tkinter.Button(root, text = 'Initiate shutdown', bd = '5', command = root.destroy)
+btn = tkinter.Button(root, text = 'Initiate shutdown', bd = '5')
 btn.pack()
-root.mainloop()
+
+
+steer = Behaviour()   # Steering vector
+
+
+while btn['state'] == tkinter.NORMAL:
+
+
+
+
+
+
+
+    root.update_idletasks()
+    root.update()
+    time.sleep(0.01)
+
+
+
+
 
 
 
