@@ -7,13 +7,12 @@ class Logger():
         log = open('logs/data.csv', 'w+', newline='')
         self.logger = csv.writer(log, dialect = 'excel')
 
-        self.i = 0
 
     # def log_to_file(self, x, y, z):
     #     self.logger.writerow([x, y, z])
 
-    def log_to_file(self, x, *y):
-        row = [x]
-        row.extend(y)
+    def log_to_file(self, t, *data):
+        row = [t]
+        row.extend(data)
 
         self.logger.writerow(row)

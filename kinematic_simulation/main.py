@@ -151,17 +151,17 @@ root = tk.Tk()
 root.resizable(width = False, height = False)
 
 boidFrame = BoidFrame()
-optFrame = OptionFrame()
+# optFrame = OptionFrame()
 
 # Spawn boids
-# flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
+flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
 
 # Case d)
 start_y = 50
 middle_x = constants.BOARD_SIZE/2
-flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
-        Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
-        Boid(boidFrame.board, middle_x, start_y+20)]
+# flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
+#         Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
+#         Boid(boidFrame.board, middle_x, start_y+20)]
 
 steer = Behaviour()   # Steering vector
 
@@ -170,10 +170,15 @@ number_of_rules = 2
 rule_picker = 0
 slider_values = np.zeros(3)
 
+# Static TARGET
+target = boidFrame.board.target
+
 # Logging information
 log = Logger()
 size_of_flock = len(flock)
 cmd_collisions = 0
+dst_to_target = np.zeros(constants.FLOCK_SIZE)
+
 
 
 while True:
@@ -187,13 +192,8 @@ while True:
     # cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
     # # target = cursor_pos
     
-    target = boidFrame.board.target
-    dist_to_target = 0
-
     rule_picker = (rule_picker + 1) % number_of_rules
 
-    dst_log = []
-    
     # Boid control
     for i, boid in enumerate(flock):
 
@@ -202,38 +202,39 @@ while True:
         # slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
         # slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
 
-        steer.update(boid, flock, target, rule_picker)  # Steering vector
+        if boid.collision_flag == False:
+            steer.update(boid, flock, target, rule_picker)  # Steering vector
 
-        if steer.force.__abs__() > constants.MAX_FORCE:
-            steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
+            if steer.force.__abs__() > constants.MAX_FORCE:
+                steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
 
-        boid.update(steer.force)
+            boid.update(steer.force)
 
         # Distance to egde of goalzone (0 while inside)
-        dist_to_target += max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
+        dst_to_target[i] = max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
+
+    
+    log.log_to_file(frame, *dst_to_target)
 
 
 
-    #     if len(dst_log) < i + 1:
-    #         dst_log.append(dist_to_target)
-    #     else: dst_log[i] = dist_to_target
 
-    # log.log_to_file(frame, dst_log)
 
     # LOGGING
-    if size_of_flock != len(flock):
-        cmd_collisions += size_of_flock - len(flock)
-        size_of_flock = len(flock)
+    # if size_of_flock != len(flock):
+    #     cmd_collisions += size_of_flock - len(flock)
+    #     size_of_flock = len(flock)
 
-    if len(flock) > 0:
-        avg_dist_to_target = dist_to_target / len(flock)
-        log.log_to_file(frame, avg_dist_to_target, cmd_collisions)
+    # if len(flock) > 0:
+    #     avg_dist_to_target = dist_to_target / len(flock)
+    #     log.log_to_file(frame, avg_dist_to_target, cmd_collisions)
 
 
 
     # Write to labes
     # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
 
+    # Update GUI
     root.update_idletasks()
     root.update()
     time.sleep(0.01)
