@@ -147,96 +147,86 @@ class OptionFrame(tk.Frame):
         self.pack()
 
 
-root = tk.Tk()
-root.resizable(width = False, height = False)
+def main(frame_duration, case_id, test_id):
 
-boidFrame = BoidFrame()
-# optFrame = OptionFrame()
+    root = tk.Tk()
+    root.resizable(width = False, height = False)
 
-# Spawn boids
-flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
+    boidFrame = BoidFrame()
+    # optFrame = OptionFrame()  # Option frame disabled
 
-# Case d)
-start_y = 50
-middle_x = constants.BOARD_SIZE/2
-# flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
-#         Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
-#         Boid(boidFrame.board, middle_x, start_y+20)]
+    # Spawn boids
+    # flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
 
-steer = Behaviour()   # Steering vector
+    # Case d)
+    start_y = 50
+    middle_x = constants.BOARD_SIZE/2
+    flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
+            Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
+            Boid(boidFrame.board, middle_x, start_y+20)]
 
-frame = -1
-number_of_rules = 2
-rule_picker = 0
-slider_values = np.zeros(3)
+    steer = Behaviour()   # Steering vector
 
-# Static TARGET
-target = boidFrame.board.target
+    frame = 0
+    number_of_rules = 2
+    rule_picker = 0
+    slider_values = np.zeros(3)
 
-# Logging information
-log = Logger()
-size_of_flock = len(flock)
-cmd_collisions = 0
-dst_to_target = np.zeros(constants.FLOCK_SIZE)
+    # Static TARGET
+    target = boidFrame.board.target
 
-
-
-while True:
-    frame += 1
-
-    # Take screenshots every 50 frames, starting from frame 20 (to load gui)
-    if (frame % 50 + 20) == 20:
-        takeScreenshot(boidFrame.board)
-    
-    # # Cursor position
-    # cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
-    # # target = cursor_pos
-    
-    rule_picker = (rule_picker + 1) % number_of_rules
-
-    # Boid control
-    for i, boid in enumerate(flock):
-
-
-        # slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
-        # slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
-        # slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
-
-        if boid.collision_flag == False:
-            steer.update(boid, flock, target, rule_picker)  # Steering vector
-
-            if steer.force.__abs__() > constants.MAX_FORCE:
-                steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
-
-            boid.update(steer.force)
-
-        # Distance to egde of goalzone (0 while inside)
-        dst_to_target[i] = max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
-
-    
-    log.log_to_file(frame, *dst_to_target)
+    # Logging information
+    log = Logger(case_id, test_id)
+    dst_target_log = np.zeros(constants.FLOCK_SIZE)
 
 
 
+    while True:
+
+        # Take screenshots every 50 frames, starting from frame 20 (to load gui)
+        # if (frame % 50 + 20) == 20:
+        #     takeScreenshot(boidFrame.board)
+        
+        # # Cursor position (dynamic target)
+        # cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
+        # # target = cursor_pos
+        
+        rule_picker = (rule_picker + 1) % number_of_rules
+
+        # Boid control
+        for i, boid in enumerate(flock):
+
+            # slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
+            # slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
+            # slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
+
+            if boid.collision_flag == False:
+                steer.update(boid, flock, target, rule_picker)  # Steering vector
+
+                if steer.force.__abs__() > constants.MAX_FORCE:
+                    steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
+
+                boid.update(steer.force)
+
+            # Logging distance to egde of goalzone (0 while inside)
+            dst_target_log[i] = max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
+
+        frame += 1
+        if frame > frame_duration and frame_duration != -1: break
+
+        log.log_to_file(frame, *dst_target_log)
 
 
-    # LOGGING
-    # if size_of_flock != len(flock):
-    #     cmd_collisions += size_of_flock - len(flock)
-    #     size_of_flock = len(flock)
+        # Write to labes
+        # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
 
-    # if len(flock) > 0:
-    #     avg_dist_to_target = dist_to_target / len(flock)
-    #     log.log_to_file(frame, avg_dist_to_target, cmd_collisions)
+        # Update GUI
+        root.update_idletasks()
+        root.update()
+        time.sleep(0.01)
 
-
-
-    # Write to labes
-    # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
-
-    # Update GUI
-    root.update_idletasks()
-    root.update()
-    time.sleep(0.01)
+    root.destroy()
 
 
+if __name__ == '__main__':
+    main(-1, 'X', 'X')
