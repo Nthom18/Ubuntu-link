@@ -24,6 +24,7 @@ class Behaviour():
         self.percieved_flockmates = []
         self.force = 0
 
+
     def update(self, drone, flock, target, rule_picker):
         self.drone = drone
         self.percieved_flockmates.clear()
