@@ -1,24 +1,26 @@
 """
-Management of containers and, init of offboard control and appliance of behaviour.
+Management of containers and init of offboard control and appliance of behaviour.
 
 Author: Nicoline Louise Thomsen
 """
 
+import numpy as np
 import subprocess
-import threading
+# import threading
 import time
 import tkinter
 
 import offb_posctl as offb
 
-from kinematic_simulation_copy.behaviour import Behaviour
 from drone import Drone
+
 import kinematic_simulation_copy.constants
+from kinematic_simulation_copy.behaviour import Behaviour
 from kinematic_simulation_copy.logger import Logger
 from kinematic_simulation_copy.vector import Vector2D
 
 
-SWARM_SIZE = 2
+SWARM_SIZE = 3
 
 # Start containers
 print("--- Starting containers ---")
@@ -60,15 +62,19 @@ btn = tkinter.Button(root, text = 'Initiate shutdown', bd = '5')
 btn.pack()
 
 
+rule_picker = 0
+target = [-5, 5]
 steer = Behaviour()   # Steering vector
 
 
 while btn['state'] == tkinter.NORMAL:
 
+    rule_picker = (rule_picker + 1) % 2
 
+    for drone in flock:
 
-
-
+        steer.update(drone, flock, target, rule_picker)  # Steering vector
+        drone.update(steer.force)
 
 
     root.update_idletasks()
@@ -88,13 +94,14 @@ while btn['state'] == tkinter.NORMAL:
 #     process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 # time.sleep(10)
 
-bashCmd = "rosservice call /setpoint_controller/forward" + str(0)
-process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-bashCmd = "rosservice call /setpoint_controller/backward" + str(1)
-process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-time.sleep(10)
 
-print(drone_controls[0].target)
+# bashCmd = "rosservice call /setpoint_controller/forward" + str(0)
+# process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+# bashCmd = "rosservice call /setpoint_controller/backward" + str(1)
+# process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+# time.sleep(10)
+
+# print(drone_controls[0].target)
 
 
 

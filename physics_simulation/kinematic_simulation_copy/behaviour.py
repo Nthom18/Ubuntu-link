@@ -22,7 +22,7 @@ class Behaviour():
     def __init__(self):
         self.drone = []
         self.percieved_flockmates = []
-        self.force = 0
+        self.force = Vector2D(*np.zeros(2))
 
     def update(self, drone, flock, target, rule_picker):
         self.drone = drone
@@ -35,30 +35,48 @@ class Behaviour():
             0: self.alignment(),
             1: self.cohesion()
         }
-        
-        # Priority rule selection
-        if self.obstacle_avoidance().__abs__() > 0 or self.separation().__abs__() > 0: 
-            self.force = self.obstacle_avoidance() + self.separation()
-        
-        # Random flight
-        # else: self.force = switcher.get(rule_picker)
 
-        # Case d)
-        else:
-            # Stop when goalsonze is reached
-            if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
-                if self.drone.velocity.__abs__() != 0:
-                    self.force = - self.drone.velocity * STOP_FORCE
-                else:
-                    self.force = Vector2D(*np.zeros(2)) 
-            # Only focus on seek if goalzone is near
-            elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
-                self.force = self.seek(target)
-            # Normal operation if goalzone is far
-            else: self.force = switcher.get(rule_picker) + self.seek(target)
+        self.force = self.alignment() + self.cohesion() + self.separation()
+        # print(self.force)
 
-        if self.drone.collision_flag == True:
-            flock.remove(self.drone)
+        # # Stop when goalsonze is reached
+        # if drone.position.distance_to(Vector2D(*target)) < 1:
+        #     if self.drone.velocity.__abs__() != 0:
+        #         self.force = - self.drone.velocity * STOP_FORCE
+        #     else:
+        #         self.force = Vector2D(*np.zeros(2)) 
+        # # Only focus on seek if goalzone is near
+        # elif drone.position.distance_to(Vector2D(*target)) < 1 * 2:
+        #     self.force = self.seek(target)
+        # # Normal operation if goalzone is far
+        # else: self.force = switcher.get(rule_picker) + self.seek(target)
+    
+    
+
+    
+        # # Priority rule selection
+        # if self.obstacle_avoidance().__abs__() > 0 or self.separation().__abs__() > 0: 
+        #     self.force = self.obstacle_avoidance() + self.separation()
+        
+        # # Random flight
+        # # else: self.force = switcher.get(rule_picker)
+
+        # # Case d)
+        # else:
+        #     # Stop when goalsonze is reached
+        #     if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
+        #         if self.drone.velocity.__abs__() != 0:
+        #             self.force = - self.drone.velocity * STOP_FORCE
+        #         else:
+        #             self.force = Vector2D(*np.zeros(2)) 
+        #     # Only focus on seek if goalzone is near
+        #     elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
+        #         self.force = self.seek(target)
+        #     # Normal operation if goalzone is far
+        #     else: self.force = switcher.get(rule_picker) + self.seek(target)
+
+        # if self.drone.collision_flag == True:
+        #     flock.remove(self.drone)
 
 
     def alignment(self):
@@ -74,9 +92,9 @@ class Behaviour():
             avg_vec /= total
             steering = avg_vec - self.drone.velocity
 
-        if steering.__abs__() > constants.MAX_FORCE:
-            steering = steering.norm() * constants.MAX_FORCE
-
+        # if steering.__abs__() > constants.MAX_FORCE:
+        #     steering = steering.norm() * constants.MAX_FORCE
+        print("a: ", steering)
         return steering
 
 
@@ -94,9 +112,9 @@ class Behaviour():
             vec_to_com = center_of_mass - self.drone.position
             steering = vec_to_com - self.drone.velocity
 
-        if steering.__abs__() > constants.MAX_FORCE:
-            steering = steering.norm() * constants.MAX_FORCE
-
+        # if steering.__abs__() > constants.MAX_FORCE:
+        #     steering = steering.norm() * constants.MAX_FORCE
+        print("c: ", steering)
         return steering
 
 
@@ -114,10 +132,10 @@ class Behaviour():
                 avg_vector += diff
                 total += 1
 
-            # COLLISION CHECK
-            if distance < constants.DRONE_RADIUS:
-                self.drone.collision_flag = True
-                flockmate.collision_flag = True
+            # # COLLISION CHECK
+            # if distance < constants.DRONE_RADIUS:
+            #     self.drone.collision_flag = True
+            #     flockmate.collision_flag = True
 
         if total > 0:
             avg_vector /= total
@@ -131,8 +149,9 @@ class Behaviour():
         # if steering.__abs__() > constants.MAX_FORCE:
         #     steering = steering.norm() * constants.MAX_FORCE
 
-        return steering.norm() * constants.MAX_FORCE
-        # return steering
+        # return steering.norm() * constants.MAX_FORCE
+        print("s: ", steering)
+        return steering
 
 
     def obstacle_avoidance(self):
