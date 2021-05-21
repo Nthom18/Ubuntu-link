@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 
 class Logger():
 
@@ -16,7 +17,29 @@ class Logger():
         self.logger.writerow(row)
 
 
-    # def combine_files(self, nr_of_files):
-    #     for i in range(nr_of_files):
+    def combine_files(self, nr_of_files, frame_duration):
+        
+        t = list(range(frame_duration))
+        dst0 = np.zeros(frame_duration)
+        dst1 = np.zeros(frame_duration)
+        dst2 = np.zeros(frame_duration)
+        dst3 = np.zeros(frame_duration)
+        dst4 = np.zeros(frame_duration)
+
+
+        for i in range(nr_of_files):
+            with open('logs/data_d_' + str(i) + '.csv','r') as csvfileQuick:
+                plots = csv.reader(csvfileQuick, delimiter=',')
+                
+                for frame, row in enumerate(plots):
+                    
+                    dst0[frame] += float(row[1])
+                    dst1[frame] += float(row[2])
+                    dst2[frame] += float(row[3])
+                    dst3[frame] += float(row[4])
+                    dst4[frame] += float(row[5])
+
+        for i in range(len(t)):
+            self.log_to_file(t[i], dst0[i]/nr_of_files, dst1[i]/nr_of_files, dst2[i]/nr_of_files, dst3[i]/nr_of_files, dst4[i]/nr_of_files)
 
 
