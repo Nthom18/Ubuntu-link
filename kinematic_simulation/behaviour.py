@@ -24,12 +24,14 @@ class Behaviour():
         self.percieved_flockmates = []
         self.force = 0
 
+
     def update(self, drone, flock, target, rule_picker):
         self.drone = drone
         self.percieved_flockmates.clear()
         for flockmate in flock:
             if 0 < flockmate.position.distance_to(self.drone.position) < self.drone.perception:
-                self.percieved_flockmates.append(flockmate)
+                if flockmate.collision_flag == False:
+                    self.percieved_flockmates.append(flockmate)
 
         switcher = {
             0: self.alignment(),
@@ -57,8 +59,6 @@ class Behaviour():
             # Normal operation if goalzone is far
             else: self.force = switcher.get(rule_picker) + self.seek(target)
 
-        if self.drone.collision_flag == True:
-            flock.remove(self.drone)
 
 
     def alignment(self):
