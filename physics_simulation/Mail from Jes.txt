@@ -1,0 +1,46 @@
+Hej Nicoline 
+
+Her rammer vi lidt en af ulemperne ved at bruger Docker container; Det er dejligt nemt at dele dem med andre, men hvis der skal laves noget brugerdefineret, så er det lidt mere omstændigt... 
+
+Den nemmeste løsning er nok at du selv bygger vm-server-sdu-world containeren, hvor du enten har tilføjet din egen verden eller ændrer en af de eksisterende. 
+
+Her er et link til docker container filerne: https://nextcloud.sdu.dk/index.php/s/Endt28xcknMrBzd 
+
+Download og udpak den, og åben en terminal og gå ind i mappen: 
+
+cd ~/<path-til-docker-container-mappen/px4-simulation-docker
+
+Og byg containerne ved brug af docker-compose (kig her hvis du ikke har docker-compose installeret): 
+
+docker-compose build 
+
+(Det her kan godt tage noget tid... )
+
+Har ændret i den originale docker-compose.yml, så du bygger to nye container (vm-server-sdu-world-custom og vm-server-sdu-drone-custom) som ligger lokalt på din ubuntu machine. Tjek med 
+
+
+docker images
+
+
+for at se om de er blevet bygget. Du kan nu vælge at køre din egen docker: 
+
+
+docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550 11311 empty
+
+
+
+og enten køre drone containeren fra px4-simulation:vm-server-sdu-drone eller vm-server-sdu-drone-custom. 
+
+
+docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 -1 -1
+
+Nu til den del du efterspurgte; lav ændringer i en world...
+•	I mappen ~/<path-til-docker-container-mappen/px4-simulation-docker/eit_playground/worlds kan du finde de worlds der er tilgængelige. Her kan du enten ændre en af de eksisterende eller tilføje din egen, men husk, før ændringerne kommer med i din container, så skal du køre docker-compose build. 
+o	Du kan også vælge kun at bygge world containeren ved at køre: docker-compose build compose-px4-sim-sdu-world
+•	Og hvis du laver din egen verden, eg. awesome_world, så skal du huske at ændre det i din docker run commando
+o	docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550 11311 awesome_world
+
+
+Hvis du giver dig i kast med dette, så får du også en bedre forståelse af hvad en docker container reelt består af, hvis du ikke allerede har læst dig frem til det eller prøvet at bygge dine egne containers. 
+
+Håber det er en hjælp. God pinse. 
