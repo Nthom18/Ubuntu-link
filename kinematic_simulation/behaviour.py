@@ -16,13 +16,22 @@ import constants
 FOV = 1/6
 MARGIN = 20
 STOP_FORCE = 0.5
+MAX_DRONE_PR_TREE = 3
+TIME_TO_SEARCH = 5000
 
 class Behaviour():
 
-    def __init__(self):
+    def __init__(self, case_id, obstacle_list):
         self.drone = []
         self.percieved_flockmates = []
         self.force = 0
+        self.case_id = case_id
+        
+        # Case c) specific
+        self.trees = obstacle_list[2:]
+        self.searched_trees = np.zeros(len(self.trees))     # Binary checklist
+        self.searching_trees = np.zeros(len(self.trees))    # Array denoting number of drone on a tree
+        self.tree_timers = np.zeros(len(self.trees)) + TIME_TO_SEARCH
 
 
     def update(self, drone, flock, target, rule_picker):
@@ -41,25 +50,63 @@ class Behaviour():
         # Priority rule selection
         if self.obstacle_avoidance().__abs__() > 0 or self.separation().__abs__() > 0: 
             self.force = self.obstacle_avoidance() + self.separation()
-        
-        # Random flight
-        # else: self.force = switcher.get(rule_picker)
 
+        # Case c)
+        elif self.case_id == 'c':
+            self.case_c(target, switcher.get(rule_picker))
+            
         # Case d)
-        else:
-            # Stop when goalsonze is reached
-            if drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
-                if self.drone.velocity.__abs__() != 0:
-                    self.force = - self.drone.velocity * STOP_FORCE
-                else:
-                    self.force = Vector2D(*np.zeros(2)) 
-            # Only focus on seek if goalzone is near
-            elif drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
-                self.force = self.seek(target)
-            # Normal operation if goalzone is far
-            else: self.force = switcher.get(rule_picker) + self.seek(target)
+        elif self.case_id == 'd':
+            self.case_d(target, switcher.get(rule_picker))
+            
+        # Aimless flight
+        else: self.force = switcher.get(rule_picker)
 
 
+############################# CASES #############################
+
+    def case_c(self, target, boid_force):
+        # Choose tree to search
+        for tree_id in range(len(self.trees)):
+            
+            # Tree search timer
+            if self.tree_timers[tree_id] > 0:
+                self.tree_timers[tree_id] -= self.searching_trees[tree_id]
+            elif self.searched_trees[tree_id] == False:
+                self.searched_trees[tree_id] = True
+                self.drone.searching_in_progress = False
+                self.searching_trees[tree_id] = 0
+
+            if not self.drone.searching_in_progress:
+                # Start searching tree if unsearched
+                if self.searched_trees[tree_id] == False:
+                    if self.searching_trees[tree_id] < MAX_DRONE_PR_TREE:
+                        self.drone.target_tree = [self.trees[tree_id][0], self.trees[tree_id][1]]
+                        self.searching_trees[tree_id] += 1
+                        self.drone.searching_in_progress = True
+                        
+                    else: self.drone.target_tree = target
+                else: self.drone.target_tree = target
+
+        self.force = boid_force + self.seek(self.drone.target_tree)
+        print(self.searching_trees, self.searched_trees, self.tree_timers)
+
+
+    def case_d(self, target, boid_force):
+        # Stop when goalsonze is reached
+        if self.drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
+            if self.drone.velocity.__abs__() != 0:
+                self.force = - self.drone.velocity * STOP_FORCE
+            else:
+                self.force = Vector2D(*np.zeros(2)) 
+        # Only focus on seek if goalzone is near
+        elif self.drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
+            self.force = self.seek(target)
+        # Normal operation if goalzone is far
+        else: self.force = boid_force + self.seek(target)
+
+
+############################# BEHAVIOURS #############################
 
     def alignment(self):
         steering = Vector2D(*np.zeros(2))
@@ -173,7 +220,6 @@ class Behaviour():
         
         return steering
 
-
     # Flying around upcomming obstacles
     def evade(self, too_close, near, step_angle):
         steering = Vector2D(*np.zeros(2))
@@ -182,7 +228,7 @@ class Behaviour():
         front_object_detected = False
 
         fov = math.ceil(len(self.drone.lidar.sensorReadings) * FOV/2)
-        
+
         left = self.drone.lidar.sensorReadings[-fov:]
         right = self.drone.lidar.sensorReadings[:fov]
 
@@ -222,4 +268,5 @@ class Behaviour():
         steering = dir.norm() - self.drone.velocity.norm()
  
         return steering.norm() * constants.MAX_FORCE 
+
 

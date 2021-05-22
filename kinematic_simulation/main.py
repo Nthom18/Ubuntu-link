@@ -32,7 +32,7 @@ def takeScreenshot(canvas):
 
 class BoardBlack(tk.Canvas):
 
-    def __init__(self):
+    def __init__(self, case_id):
         super().__init__(width=constants.BOARD_SIZE, height=constants.BOARD_SIZE,
             background=constants.COLOUR_CANVAS, highlightthickness=0)
 
@@ -40,22 +40,27 @@ class BoardBlack(tk.Canvas):
 
         self.pack(side = tk.LEFT)
 
-        # DRAW OBSTACLES
-
-        # Circular obstacles x, y, r
-        self.obstacleList_circle = [[150, 200, 50], [700, 300, 100], [300, 500, 100]]
-        # self.obstacleList_circle = [[200, 200, 20], [300, 200, 20], [400, 200, 20],
-        #                     [250, 300, 20], [350, 300, 20], [450, 300, 20],
-        #                     [200, 400, 20], [300, 400, 20], [400, 400, 20]]
-        
-        # Case d)
-        self.obstacleList_circle = [[-1435, constants.BOARD_SIZE/2, 1500], [constants.BOARD_SIZE + 1435, constants.BOARD_SIZE/2, 1500], 
-                            [200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [280, 440, 30], [175, 500, 30], [700, 400, 70]]
-        
-        
-        # self.obstacleList_circle = []
-        # self.obstacleList_box = [[400, 400, 50, 100]]
+        # DRAW OBSTACLES (Circular obstacles x, y, r)
+        # borders
         self.obstacleList_box = []
+        self.obstacleList_circle = [[-1435, constants.BOARD_SIZE/2, 1500], [constants.BOARD_SIZE + 1435, constants.BOARD_SIZE/2, 1500]]        
+
+        # Case c)
+        if case_id == 'c':
+            self.obstacleList_circle.extend([[200, 200, 20], [500, 300, 20], [300, 500, 20], [600, 600, 20]])
+
+        # Case d)
+        elif case_id == 'd':
+            self.obstacleList_circle.extend([[200, 200, 50], [300, 300, 40], [500, 250, 50], [360, 500, 75], [550, 450, 30], [280, 440, 30], [175, 500, 30], [700, 400, 70]])
+        
+        # Default
+        else:
+            self.obstacleList_circle.extend([[150, 200, 50], [700, 300, 100], [300, 500, 100]])
+            # self.obstacleList_circle = [[200, 200, 20], [300, 200, 20], [400, 200, 20],
+            #                 [250, 300, 20], [350, 300, 20], [450, 300, 20],
+            #                 [200, 400, 20], [300, 400, 20], [400, 400, 20]]
+            
+        
         
         for x, y, r in self.obstacleList_circle:
             self.drawObstacles_circle(x, y, r, constants.COLOUR_OBSTACLE) 
@@ -87,11 +92,11 @@ class BoardBlack(tk.Canvas):
 
 class BoidFrame(tk.Frame):
 
-    def __init__(self):
+    def __init__(self, case_id):
         super().__init__()
 
         self.master.title('Boids')
-        self.board = BoardBlack()
+        self.board = BoardBlack(case_id)
         self.pack()
 
 
@@ -152,25 +157,30 @@ def main(frame_duration, case_id, test_id):
     root = tk.Tk()
     root.resizable(width = False, height = False)
 
-    boidFrame = BoidFrame()
+    boidFrame = BoidFrame(case_id)
     # optFrame = OptionFrame()  # Option frame disabled
 
     # Spawn boids
-    # flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
-
     # Case d)
-    start_y = 50
-    middle_x = constants.BOARD_SIZE/2
-    flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
-            Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
-            Boid(boidFrame.board, middle_x, start_y+20)]
+    if case_id == 'd':
+        start_y = 50
+        middle_x = constants.BOARD_SIZE/2
+        flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
+                Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
+                Boid(boidFrame.board, middle_x, start_y+20)]
+        
+        constants.FLOCK_SIZE = 5
+        constants.GOALZONE = constants.DRONE_RADIUS * constants.FLOCK_SIZE + constants.DRONE_RADIUS
+    
+    else:
+        flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
 
-    steer = Behaviour()   # Steering vector
+    steer = Behaviour(case_id, boidFrame.board.obstacleList_circle)  # Steering vector
 
     frame = 0
     number_of_rules = 2
     rule_picker = 0
-    slider_values = np.zeros(3)
+    # slider_values = np.zeros(3) # Option frame disabled
 
     # Static TARGET
     target = boidFrame.board.target
@@ -178,7 +188,6 @@ def main(frame_duration, case_id, test_id):
     # Logging information
     log = Logger(case_id, test_id)
     dst_target_log = np.zeros(constants.FLOCK_SIZE)
-
 
 
     while True:
@@ -229,4 +238,4 @@ def main(frame_duration, case_id, test_id):
 
 
 if __name__ == '__main__':
-    main(-1, 'X', 'X')
+    main(-1, 'c', 'main')

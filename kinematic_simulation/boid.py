@@ -35,6 +35,10 @@ class Boid():
 
         self.lidar = LiDAR(self, self.canvas.obstacleList_circle, self.canvas.obstacleList_box, self.canvas)
 
+        # Case c)
+        self.target_tree = [0, 0]
+        self.searching_in_progress = 0
+
 
     def update(self, force):
 
