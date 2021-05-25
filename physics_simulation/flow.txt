@@ -6,6 +6,19 @@ docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-s
 
 GAZEBO_MASTER_URI=http://localhost:17550 gzclient --verbose
 
+
+
+
+
+docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550 11311 empty
+
+
+
+
+
+
+
+
 qgc
 
 Desktop/Ubuntu-link/./offb_posctl.py

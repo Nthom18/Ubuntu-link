@@ -31,6 +31,9 @@ docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550
 
 og enten køre drone containeren fra px4-simulation:vm-server-sdu-drone eller vm-server-sdu-drone-custom. 
 
+docker run --name drone --network host --rm -id vm-server-sdu-drone-custom 16550 17550 11311 sdu_drone 1 -1 -1
+
+
 
 docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 -1 -1
 
