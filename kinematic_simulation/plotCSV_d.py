@@ -41,4 +41,4 @@ def plotCSV_d(filename):
 
 
 if __name__ == '__main__':
-    plotCSV_d('data_d_main')
+    plotCSV_d('data_d_1')

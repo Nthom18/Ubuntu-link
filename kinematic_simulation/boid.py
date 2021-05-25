@@ -37,7 +37,7 @@ class Boid():
 
         # Case c)
         self.target_tree = [0, 0]
-        self.searching_in_progress = 0
+        self.analyzing_in_progress = np.zeros(len(self.canvas.obstacleList_circle[2:]), dtype=bool)
 
 
     def update(self, force):
