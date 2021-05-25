@@ -188,7 +188,7 @@ def main(frame_duration, case_id, test_id):
     # Logging information
     log = Logger(case_id, test_id)
     dst_target_log = np.zeros(constants.FLOCK_SIZE)
-
+    collision_tracker = 0
 
     while True:
 
@@ -204,6 +204,7 @@ def main(frame_duration, case_id, test_id):
 
         # Boid control
         for i, boid in enumerate(flock):
+            change_tracker = boid.collision_flag
 
             # slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
             # slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
@@ -220,11 +221,12 @@ def main(frame_duration, case_id, test_id):
             # Logging distance to egde of goalzone (0 while inside)
             dst_target_log[i] = max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
 
+            collision_tracker += change_tracker != boid.collision_flag
+
         frame += 1
         if frame > frame_duration and frame_duration != -1: break
 
         log.log_to_file(frame, *dst_target_log)
-
 
         # Write to labes
         # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
@@ -236,6 +238,8 @@ def main(frame_duration, case_id, test_id):
 
     root.destroy()
 
+    return collision_tracker
+
 
 if __name__ == '__main__':
-    main(-1, 'c', 'main')
+    main(-1, 'd', 'main')

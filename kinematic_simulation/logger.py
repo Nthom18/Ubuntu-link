@@ -17,7 +17,7 @@ class Logger():
         self.logger.writerow(row)
 
 
-    def combine_files(self, nr_of_files, frame_duration):
+    def combine_files(self, prefix, nr_of_files, frame_duration):
         
         t = list(range(frame_duration))
         dst0 = np.zeros(frame_duration)
@@ -28,7 +28,7 @@ class Logger():
 
 
         for i in range(nr_of_files):
-            with open('logs/data_d_' + str(i) + '.csv','r') as csvfileQuick:
+            with open('logs/' + prefix + '_' + str(i) + '.csv','r') as csvfileQuick:
                 plots = csv.reader(csvfileQuick, delimiter=',')
                 
                 for frame, row in enumerate(plots):

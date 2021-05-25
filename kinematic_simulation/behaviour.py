@@ -209,8 +209,8 @@ class Behaviour():
                 avg_vec += self.drone.velocity.rotate(math.radians(index * step_angle))
                 total += 1
             
-            # COLLISION CHECK
-            if ray < constants.DRONE_RADIUS:
+            # COLLISION CHECK (a drone can only hit an object if moving)
+            if ray < constants.DRONE_RADIUS and self.drone.velocity.__abs__() > 0:
                 self.drone.collision_flag = True
 
         if avg_vec.__abs__() != 0:
