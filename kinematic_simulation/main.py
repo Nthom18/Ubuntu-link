@@ -41,7 +41,7 @@ class BoardBlack(tk.Canvas):
         self.pack(side = tk.LEFT)
 
         # DRAW OBSTACLES (Circular obstacles x, y, r)
-        # borders
+        # Borders
         self.obstacleList_box = []
         self.obstacleList_circle = [[-1435, constants.BOARD_SIZE/2, 1500], [constants.BOARD_SIZE + 1435, constants.BOARD_SIZE/2, 1500]]        
 
@@ -270,4 +270,4 @@ def main(frame_duration, case_id, test_id, flock_size):
 
 
 if __name__ == '__main__':
-    main(-1, 'c', 'main', constants.FLOCK_SIZE)
+    main(-1, 'd', 'main', constants.FLOCK_SIZE)

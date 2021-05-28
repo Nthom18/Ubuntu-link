@@ -7,7 +7,7 @@ BOARD_SIZE = 864    # Board size of the computer used to run the tests
 
 
 # Boids attributes
-FLOCK_SIZE = 1
+FLOCK_SIZE = 5
 DRONE_RADIUS = 5
 PERCEPTION = SCREEN_HEIGHT / 8
 MAX_SPEED = 8
