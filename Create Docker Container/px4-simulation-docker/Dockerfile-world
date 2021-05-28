@@ -1,0 +1,85 @@
+FROM px4io/px4-dev-ros-melodic
+MAINTAINER Jes Jepsen <jegj@mmmi.sdu.dk>
+
+# Update and install
+RUN apt-get update && apt-get install -y \
+    git \
+    nano \
+    ssh \
+    openssh-client \
+    make \
+    cmake \
+    build-essential \
+    socat \
+    g++ \
+    xmlstarlet \
+    net-tools
+
+# Environment variable(s)
+ENV HEADLESS="1"
+
+ENV PX4_BRANCH="v1.11.0"
+ENV SITL_BRANCH="master"
+
+ENV PX4_HOME_LAT 55.4719762
+ENV PX4_HOME_LON 10.3248095
+ENV PX4_HOME_ALT 7.2000000
+
+ENV WORKSPACE_DIR /root
+ENV FIRMWARE_DIR ${WORKSPACE_DIR}/Firmware
+ENV CATKIN_WS=${WORKSPACE_DIR}/catkin_ws
+ENV CATKIN_WS_SRC=${CATKIN_WS}/src
+
+# Workdir
+#RUN mkdir -p ${WORKSPACE_DIR}
+#WORKDIR ${WORKSPACE_DIR}
+
+RUN git config --global user.email "sim@sdu.dk"
+RUN git config --global user.name "John Doe"
+
+RUN git clone --branch ${PX4_BRANCH} https://github.com/PX4/Firmware.git ${FIRMWARE_DIR}
+RUN git -C ${FIRMWARE_DIR} submodule update --init --recursive
+
+# Fix
+RUN sed -i 's/TRUE/true/g' ${FIRMWARE_DIR}/Tools/sitl_gazebo/include/gazebo_opticalflow_plugin.h
+
+# Edit gazebo so it can change master port
+RUN sed -i 's/export GAZEBO_MASTER_URI=http:\/\/localhost:11345/export GAZEBO_MASTER_URI=${GAZEBO_MASTER_URI:-"http:\/\/localhost:11345"}/' /usr/share/gazebo/setup.sh
+
+# Add SDU Drone model
+RUN sed -i 's/if750a/if750a sdu_drone sdu_drone_mono_cam sdu_drone_mono_cam_downward/g' ${FIRMWARE_DIR}/platforms/posix/cmake/sitl_target.cmake
+
+#RUN git checkout ${PX4_BRANCH}
+WORKDIR ${FIRMWARE_DIR}
+RUN DONT_RUN=1 make px4_sitl gazebo
+
+ADD eit_playground/models ${FIRMWARE_DIR}/Tools/sitl_gazebo/models/
+
+ADD eit_playground/init.d-posix ${FIRMWARE_DIR}/ROMFS/px4fmu_common/init.d-posix/airframes/
+ADD eit_playground/init.d-posix ${FIRMWARE_DIR}/ROMFS/px4fmu_common/init.d-posix/
+
+ADD eit_playground/mixers ${FIRMWARE_DIR}/ROMFS/px4fmu_common/mixers/
+#ADD launch ${FIRMWARE_DIR}/launch/
+
+# Setup ROS
+RUN mkdir -p ${CATKIN_WS_SRC}/eit_playground
+WORKDIR ${CATKIN_WS_SRC}
+
+ADD eit_playground ${CATKIN_WS_SRC}/eit_playground/
+
+### Run startup script
+COPY run.sh ${CATKIN_WS_SRC}
+RUN chmod +x ${CATKIN_WS_SRC}/run.sh
+RUN ${CATKIN_WS_SRC}/run.sh
+
+#EXPOSE 11311
+#EXPOSE 17550-17590/udp
+
+### Run startup script
+COPY edit_rcS.bash ${WORKSPACE_DIR}
+COPY setup_gazebo.bash ${WORKSPACE_DIR}
+
+COPY entrypoint_world.sh /root/entrypoint_world.sh
+RUN chmod +x /root/entrypoint_world.sh
+
+ENTRYPOINT ["/root/entrypoint_world.sh"]

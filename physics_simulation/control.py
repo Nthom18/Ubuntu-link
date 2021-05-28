@@ -20,25 +20,62 @@ from kinematic_simulation_copy.logger import Logger
 from kinematic_simulation_copy.vector import Vector2D
 
 
-SWARM_SIZE = 3
+SWARM_SIZE = 1
+docker_wait = 4
+
+def start_drones_d():
+
+    x = 0
+    y = -2.5
+
+    drone_containers.append("sdu_drone_0")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 " + str(x-1) + " " + str(y)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
+    drone_containers.append("sdu_drone_1")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 " + str(x+1) + " " + str(y)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
+    drone_containers.append("sdu_drone_2")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 2 " + str(x-1) + " " + str(y-2)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
+    drone_containers.append("sdu_drone_3")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 3 " + str(x+1) + " " + str(y-2)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
+    drone_containers.append("sdu_drone_4")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 4 " + str(x) + " " + str(y-1)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
 
 # Start containers
 print("--- Starting containers ---")
 print('\n')
 
-bashCmd = "docker run --name world --network host -id --rm sduuascenter/px4-simulation:vm-server-sdu-world 17550 11311 empty"
+bashCmd = "docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550 11311 case_d"
 process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 # output, error = process.communicate()
-time.sleep(3)
+time.sleep(docker_wait)
 
 drone_containers = []
+start_drones_d()
 
-for i in range(SWARM_SIZE):
-    drone_containers.append("sdu_drone_" + str(i))
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone " + str(i) + " 0 " + str(i)
-    process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    # output, error = process.communicate()
-    time.sleep(3)
+# for i in range(SWARM_SIZE):
+    # drone_containers.append("sdu_drone_" + str(i))
+    # bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone " + str(i) + " 0 " + str(i)
+    # process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    # # output, error = process.communicate()
+    # time.sleep(3)
+
+
+
+
 
 print("Drone containers: ", drone_containers)
 
@@ -51,11 +88,13 @@ print('\n')
 drone_controls = [offb.OffboardControl(container) for container in drone_containers]
 flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
+time.sleep(5)   # Let last drone get airborne
+
 print('\n')
 print("--- Startup complete ---")
 
 
-# Tkinter windown for shutdown - PAUSES PROGRAM UNTIL BUTTON PRESS (hover over button)
+# Tkinter windown for shutdown (hover over button)
 root = tkinter.Tk()
 root.resizable(width = False, height = False)
 btn = tkinter.Button(root, text = 'Initiate shutdown', bd = '5')
@@ -63,10 +102,12 @@ btn.pack()
 
 
 rule_picker = 0
-target = [-5, 5]
-steer = Behaviour()   # Steering vector
+obstacleList_circle = [[5.9, -22.5, 1.5], [-12.85, -25, 1.5], [-7.6, -22, 1.5], [6.6, -15, 2], [11.6, -10, 2.5], [3.4, -12.5, 2.5], [13.4, -20, 3.5], [-3.6, -25, 3.75], [-93.35, -21.6, 75], [93.35, -21.6, 75]]
+target = [842 / 40, (864 - 100) / 20]   # Same goal as kinematic after rescaling 
+steer = Behaviour('d', obstacleList_circle)   # Steering vector
 
 
+# MAIN LOOP ###################################
 while btn['state'] == tkinter.NORMAL:
 
     rule_picker = (rule_picker + 1) % 2
@@ -138,3 +179,7 @@ output, error = process.communicate()
 
 print('\n')
 print("--- DONE ---")
+
+
+
+

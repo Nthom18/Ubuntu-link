@@ -1,0 +1,16 @@
+#This file have two purposes: Building the docker images
+
+version: '3.3'
+
+services:
+  compose-px4-sim-sdu-drone:
+    image: vm-server-sdu-drone-custom
+    build:
+      context: ./
+      dockerfile: Dockerfile-drone
+
+  compose-px4-sim-sdu-world:
+    image: vm-server-sdu-world-custom
+    build:
+      context: ./
+      dockerfile: Dockerfile-world
