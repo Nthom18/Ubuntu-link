@@ -1,0 +1,8 @@
+rospkg
+catkin_pkg
+catkin_tools
+wstool
+setuptools
+numpy
+mavproxy
+pymavlink

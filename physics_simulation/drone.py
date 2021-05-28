@@ -4,6 +4,8 @@ import offb_posctl as offb
 
 from kinematic_simulation_copy.vector import Vector2D
 
+from kinematic_simulation_copy.lidar import LiDAR
+
 class Drone():
 
     def __init__(self, drone_controller, id):
@@ -13,7 +15,7 @@ class Drone():
 
         self.max_speed = 10
         self.hitbox = 1
-        self.perception = 50
+        self.perception = 4
 
         self.me = drone_controller
 
@@ -25,6 +27,10 @@ class Drone():
         self.acceleration = Vector2D(*np.zeros(2))
 
         self.collision_flag = False
+
+        # LiDAR
+        self.obstacleList_circle = [[5.9, -22.5, 1.5], [-12.85, -25, 1.5], [-7.6, -22, 1.5], [6.6, -15, 2], [11.6, -10, 2.5], [3.4, -12.5, 2.5], [13.4, -20, 3.5], [-3.6, -25, 3.75], [-93.35, -21.6, 75], [93.35, -21.6, 75]]
+        self.lidar = LiDAR(self, self.obstacleList_circle)
 
 
     def update(self, force):

@@ -274,8 +274,8 @@ class OffboardControl:
             self.set_state("BACKWARD")
 
             while self.state == "BACKWARD":
-                x = self.target.pose.position.x - i
-                y = self.target.pose.position.y
+                x = 4
+                y = -2
                 z = self.target.pose.position.z
 
                 self.set_target_xyz(x, y, z, delay)

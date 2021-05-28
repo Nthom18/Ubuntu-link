@@ -18,17 +18,13 @@ RESOLUTION = 1 / 8
 
 class LiDAR():
 
-    def __init__(self, originPoint, obstacleList_circle, obstacleList_box, canvas):
+    def __init__(self, originPoint, obstacleList_circle):
         self.oPos = originPoint.position
         self.oDir = originPoint.velocity.norm()
         self.range = originPoint.perception
         self.obstacles_circle = obstacleList_circle
-        self.obstacles_box = obstacleList_box
         self.sensorReadings = []
 
-        # DEBUG visualization
-        self.canvas = canvas
-        self.distanceCircle = self.canvas.create_oval(0, 0, 0, 0, fill = constants.COLOUR_GREY, outline = "", tags = "grey")
 
 
     def update(self, originPoint):
@@ -49,21 +45,6 @@ class LiDAR():
             dot = self.sphereTracing(self.oDir.rotate(math.radians(i / RESOLUTION)))
             self.sensorReadings.append(self.oPos.distance_to(dot))
 
-            # DEBUG
-            # self.makeDot(dot, 2)
-
-        # DEBUGGING ------------------ Show fov dots
-        # if len(self.sensorReadings) != 0:
-        #     step_angle = 360 / len(self.sensorReadings)
-
-        # fov = math.ceil(len(self.sensorReadings) * 1/8)
-        # left = self.sensorReadings[-fov:]
-        # right = self.sensorReadings[:fov]
-
-        # for i, d in enumerate(left + right):
-        #     dir = self.oPos + self.oDir.rotate(math.radians((i - fov) * step_angle)) * d
-        #     self.makeDotBlue(dir, 2)
-        # # -----------------------------
 
     def sphereTracing(self, dir):
         p = self.oPos
@@ -83,7 +64,7 @@ class LiDAR():
         
 
     def signedDistToScene(self, p):
-        distToScene = constants.BOARD_SIZE
+        distToScene = 864/20    # kinematic board size after rescaling
 
         for circle in self.obstacles_circle:
             distToCircle = self.signedDistToCircle(p, circle)
@@ -123,30 +104,3 @@ class LiDAR():
 
     def length(self, v):
         return np.sqrt(v.x**2 + v.y**2)
-
-
-    # ********V******** DEBUG FUNCTIONS ********V******** #
-
-
-    def drawDistance(self, distance):
-        x0 = self.oPos.x - distance
-        y0 = self.oPos.y - distance
-        x1 = self.oPos.x + distance
-        y1 = self.oPos.y + distance
-
-        self.canvas.coords(self.distanceCircle, x0, y0, x1, y1)
-
-    
-    def makeDot(self, p, r):
-        x0 = p.x - r
-        y0 = p.y - r
-        x1 = p.x + r
-        y1 = p.y + r
-        return self.canvas.create_oval(x0, y0, x1, y1, fill = constants.COLOUR_RED, outline = "", tags = "red")
-
-    def makeDotBlue(self, p, r):
-        x0 = p.x - r
-        y0 = p.y - r
-        x1 = p.x + r
-        y1 = p.y + r
-        return self.canvas.create_oval(x0, y0, x1, y1, fill = constants.COLOUR_RED, outline = "", tags = "red")
