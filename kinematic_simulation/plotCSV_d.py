@@ -1,8 +1,7 @@
 '''
-Plotting csv files.
-This script only works for a flock of five drones!
+Plotting csv files for case d).
+This script only works for a flock of five drones.
 '''
-
 
 import csv
 import matplotlib.pyplot as plt
@@ -41,4 +40,4 @@ def plotCSV_d(filename):
 
 
 if __name__ == '__main__':
-    plotCSV_d('data_d_9')
+    plotCSV_d('data_d_main')

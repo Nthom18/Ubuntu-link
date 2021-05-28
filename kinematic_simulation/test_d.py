@@ -1,14 +1,11 @@
-import multiprocessing
-import time
-
 from main import main
 from logger import Logger
-from plotCSV_d import plotCSV_d
 
+flock_size = 5
 nr_of_tests = 50
 frame_duration = 800
 
-log = Logger('d', 'combined')
+log = Logger('d', 'combined', flock_size)
 
 
 def test_d():
@@ -18,13 +15,10 @@ def test_d():
     for i in range(nr_of_tests):
 
         print("Test: ", i)
-        collisions += main(frame_duration, 'd', i)    # Run simulation
+        collisions += main(frame_duration, 'd', i, flock_size)    # Run simulation
 
-    print('Collisions: ', collisions)
+    print('\n', 'Collisions: ', collisions)
     log.combine_files('data_d', nr_of_tests, frame_duration)
 
 if __name__ == '__main__':
     test_d()
-    
-
-        

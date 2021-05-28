@@ -3,14 +3,26 @@ import numpy as np
 
 class Logger():
 
-    def __init__(self, case_id, test_id):
-        file_name = 'logs/data_' + case_id + '_' + str(test_id) +'.csv'
-        log = open(file_name, 'w+', newline='')  # w+ mode truncates (clears) the file        
+    def __init__(self, case_id, test_id, flock_size):
+
+        if case_id == 'c':
+            file_name = 'logs/data_' + case_id + '_' + str(flock_size) + '.csv'
+            
+            if test_id == 0 or test_id == 'main':
+                log = open(file_name, 'w+', newline='') # w+ mode truncates (clears) the file
+            else:
+                log = open(file_name, 'a', newline='')  # Append to existing file 
+
+
+        elif case_id == 'd':
+            file_name = 'logs/data_' + case_id + '_' + str(test_id) +'.csv'
+            log = open(file_name, 'w+', newline='')  # w+ mode truncates (clears) the file (new file for every test)   
         
         self.logger = csv.writer(log, dialect = 'excel')
 
 
     def log_to_file(self, t, *data):
+
         row = [t]
         row.extend(data)
 

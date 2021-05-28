@@ -2,16 +2,19 @@ import numpy as np
 import pyautogui
 
 _, SCREEN_HEIGHT = pyautogui.size()
-BOARD_SIZE = SCREEN_HEIGHT * 4/5
+# BOARD_SIZE = SCREEN_HEIGHT * 4/5
+BOARD_SIZE = 864    # Board size of the computer used to run the tests
+
 
 # Boids attributes
-FLOCK_SIZE = 5
+FLOCK_SIZE = 1
 DRONE_RADIUS = 5
 PERCEPTION = SCREEN_HEIGHT / 8
 MAX_SPEED = 8
 MAX_FORCE = 1
 GOALZONE = DRONE_RADIUS * FLOCK_SIZE + DRONE_RADIUS
 
+# Colours
 COLOUR_RED = "red"
 COLOUR_WHITE = "white"
 COLOUR_GREY = "gray64"

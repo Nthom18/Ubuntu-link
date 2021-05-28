@@ -25,10 +25,11 @@ class Boid():
         self.position = Vector2D(x, y)
         
         self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * constants.MAX_SPEED)
+        self.acceleration = Vector2D(*np.zeros(2))
 
         # For specific cases:
         # self.velocity = Vector2D(*np.zeros(2))
-        self.acceleration = Vector2D(*np.zeros(2))
+        
 
         self.dot = self.makeDot(init = True)
         self.collision_flag = False

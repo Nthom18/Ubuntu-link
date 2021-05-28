@@ -17,7 +17,7 @@ FOV = 1/6
 MARGIN = 20
 STOP_FORCE = 0.5
 MAX_DRONE_PR_TREE = 3
-TIME_TO_ANALYZE = 5000
+TIME_TO_ANALYZE = 1000
 
 class Behaviour():
 
@@ -32,6 +32,8 @@ class Behaviour():
         self.analyzed_trees = np.zeros(len(self.trees))     # Binary checklist
         self.analyzing_trees = np.zeros(len(self.trees))    # Array denoting number of drone on a tree
         self.tree_timers = np.zeros(len(self.trees)) + TIME_TO_ANALYZE
+
+        self.break_flag = False
 
 
     def update(self, drone, flock, target, rule_picker):
@@ -53,7 +55,7 @@ class Behaviour():
 
         # Case c)
         elif self.case_id == 'c':
-            self.case_c(target, switcher.get(rule_picker))
+            self.case_c(target)
             
         # Case d)
         elif self.case_id == 'd':
@@ -65,7 +67,7 @@ class Behaviour():
 
 ############################# CASES #############################
 
-    def case_c(self, target, boid_force):
+    def case_c(self, target):
         # Choose tree to analyze
         for tree_id in range(len(self.trees)):
             
@@ -74,13 +76,13 @@ class Behaviour():
                 self.tree_timers[tree_id] -= self.analyzing_trees[tree_id]
             elif self.analyzed_trees[tree_id] == False:
                 self.analyzed_trees[tree_id] = True
-                self.analyzing_trees[tree_id] = 0 # Debug info
+                self.analyzing_trees[tree_id] = 0 # For debug info
             else:
                 self.drone.analyzing_in_progress[tree_id] = False
 
             # If not already analyzing
             if not any(self.drone.analyzing_in_progress):
-                # Start analyze tree if unanalyzed
+                # Start analyze tree if unanalyzed and not full
                 if self.analyzed_trees[tree_id] == False:
                     if self.analyzing_trees[tree_id] < MAX_DRONE_PR_TREE:
                         self.drone.target_tree = [self.trees[tree_id][0], self.trees[tree_id][1]]
@@ -88,12 +90,14 @@ class Behaviour():
                         if self.drone.position.distance_to(Vector2D(*self.drone.target_tree)) < 50:
                             self.analyzing_trees[tree_id] += 1
                             self.drone.analyzing_in_progress[tree_id] = True
-                        
-                    else: self.drone.target_tree = target
-                # else: self.drone.target_tree = target
 
-        self.force = self.seek(self.drone.target_tree)
-        print(self.analyzing_trees, self.analyzed_trees, self.tree_timers)
+        if all(self.analyzed_trees):
+            self.break_flag = True
+
+        else:
+            self.force = self.seek(self.drone.target_tree)
+
+        # print(self.analyzing_trees, self.analyzed_trees, self.tree_timers)
 
 
     def case_d(self, target, boid_force):

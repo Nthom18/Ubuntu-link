@@ -95,7 +95,7 @@ class BoidFrame(tk.Frame):
     def __init__(self, case_id):
         super().__init__()
 
-        self.master.title('Boids')
+        self.master.title('Kinematic simulation case ' +  case_id + ')')
         self.board = BoardBlack(case_id)
         self.pack()
 
@@ -152,7 +152,7 @@ class OptionFrame(tk.Frame):
         self.pack()
 
 
-def main(frame_duration, case_id, test_id):
+def main(frame_duration, case_id, test_id, flock_size):
 
     root = tk.Tk()
     root.resizable(width = False, height = False)
@@ -160,40 +160,69 @@ def main(frame_duration, case_id, test_id):
     boidFrame = BoidFrame(case_id)
     # optFrame = OptionFrame()  # Option frame disabled
 
-    # Spawn boids
+    frame = 0
+    number_of_rules = 2
+    rule_picker = 0
+
+    # Static target
+    target = boidFrame.board.target    
+
+    # Logging information
+    log = Logger(case_id, test_id, flock_size)
+    dst_target_log = np.zeros(flock_size)
+    collision_tracker = 0
+
+
+    # SPAWN BOIDS #####################################
+    # Case c)
+    if case_id == 'c':
+        start_x = target[0]
+        start_y = target[1]
+
+        if flock_size == 1:
+            flock = [Boid(boidFrame.board, start_x, start_y)]
+
+        elif flock_size == 3:
+            flock = [Boid(boidFrame.board, start_x-20, start_y), Boid(boidFrame.board, start_x+20, start_y), 
+                     Boid(boidFrame.board, start_x, start_y+40)]
+        
+        elif flock_size == 7:
+            flock = [Boid(boidFrame.board, start_x-30, start_y-30), Boid(boidFrame.board, start_x, start_y-30), Boid(boidFrame.board, start_x+30, start_y-30), 
+                     Boid(boidFrame.board, start_x, start_y), 
+                     Boid(boidFrame.board, start_x-30, start_y+30), Boid(boidFrame.board, start_x, start_y+30), Boid(boidFrame.board, start_x+30, start_y+30)]
+        
+        else:   # Default to 5
+            flock = [Boid(boidFrame.board, start_x-20, start_y), Boid(boidFrame.board, start_x+20, start_y), 
+                     Boid(boidFrame.board, start_x-20, start_y+40), Boid(boidFrame.board, start_x+20, start_y+40), 
+                     Boid(boidFrame.board, start_x, start_y+20)]
+        
+        constants.FLOCK_SIZE = 5
+
     # Case d)
-    if case_id == 'd':
+    elif case_id == 'd':
+        start_x = target[0]
         start_y = 50
-        middle_x = constants.BOARD_SIZE/2
-        flock = [Boid(boidFrame.board, middle_x-20, start_y), Boid(boidFrame.board, middle_x+20, start_y), 
-                Boid(boidFrame.board, middle_x-20, start_y+40), Boid(boidFrame.board, middle_x+20, start_y+40), 
-                Boid(boidFrame.board, middle_x, start_y+20)]
+        flock = [Boid(boidFrame.board, start_x-20, start_y), Boid(boidFrame.board, start_x+20, start_y), 
+                Boid(boidFrame.board, start_x-20, start_y+40), Boid(boidFrame.board, start_x+20, start_y+40), 
+                Boid(boidFrame.board, start_x, start_y+20)]
         
         constants.FLOCK_SIZE = 5
         constants.GOALZONE = constants.DRONE_RADIUS * constants.FLOCK_SIZE + constants.DRONE_RADIUS
     
+    # Default
     else:
         flock = [Boid(boidFrame.board, *np.random.rand(2) * constants.BOARD_SIZE) for _ in range(constants.FLOCK_SIZE)]
 
     steer = Behaviour(case_id, boidFrame.board.obstacleList_circle)  # Steering vector
 
-    frame = 0
-    number_of_rules = 2
-    rule_picker = 0
-    # slider_values = np.zeros(3) # Option frame disabled
-
-    # Static TARGET
-    target = boidFrame.board.target
-
-    # Logging information
-    log = Logger(case_id, test_id)
-    dst_target_log = np.zeros(constants.FLOCK_SIZE)
-    collision_tracker = 0
-
+    # MAIN LOOP #####################################
     while True:
 
         # Take screenshots every 50 frames, starting from frame 20 (to load gui)
         # if (frame % 50 + 20) == 20:
+        #     takeScreenshot(boidFrame.board)
+
+        # if frame == 100:
         #     takeScreenshot(boidFrame.board)
         
         # # Cursor position (dynamic target)
@@ -205,10 +234,6 @@ def main(frame_duration, case_id, test_id):
         # Boid control
         for i, boid in enumerate(flock):
             change_tracker = boid.collision_flag
-
-            # slider_values[0] = optFrame.board.alignment.get() * optFrame.board.sldr_alignment.get()      # Alignment
-            # slider_values[1] = optFrame.board.cohesion.get() * optFrame.board.sldr_cohesion.get()        # Cohesion
-            # slider_values[2] = optFrame.board.seperation.get() * optFrame.board.sldr_seperation.get()    # Seperation
 
             if boid.collision_flag == False:
                 steer.update(boid, flock, target, rule_picker)  # Steering vector
@@ -225,16 +250,19 @@ def main(frame_duration, case_id, test_id):
 
         frame += 1
         if frame > frame_duration and frame_duration != -1: break
+        if steer.break_flag == True: break
 
-        log.log_to_file(frame, *dst_target_log)
-
-        # Write to labes
-        # optFrame.board.text.set(str(int(Vector2D.__abs__(flock[0].velocity))))
+        if case_id == 'd': 
+            log.log_to_file(frame, *dst_target_log)
 
         # Update GUI
         root.update_idletasks()
         root.update()
         time.sleep(0.01)
+
+
+    if case_id == 'c': 
+        log.log_to_file(test_id, frame, collision_tracker)
 
     root.destroy()
 
@@ -242,4 +270,4 @@ def main(frame_duration, case_id, test_id):
 
 
 if __name__ == '__main__':
-    main(-1, 'd', 'main')
+    main(-1, 'c', 'main', constants.FLOCK_SIZE)
