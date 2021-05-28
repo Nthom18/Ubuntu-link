@@ -296,4 +296,4 @@ class OffboardControl:
 
 
 if __name__ == '__main__':
-    SPC = OffboardControl()
+    SPC = OffboardControl('sdu_drone_0')

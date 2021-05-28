@@ -19,8 +19,7 @@ from kinematic_simulation_copy.behaviour import Behaviour
 from kinematic_simulation_copy.logger import Logger
 from kinematic_simulation_copy.vector import Vector2D
 
-
-SWARM_SIZE = 1
+SWARM_SIZE = 5
 docker_wait = 4
 
 def start_drones_d():
@@ -66,13 +65,12 @@ time.sleep(docker_wait)
 drone_containers = []
 start_drones_d()
 
-# for i in range(SWARM_SIZE):
-    # drone_containers.append("sdu_drone_" + str(i))
-    # bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone " + str(i) + " 0 " + str(i)
-    # process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    # # output, error = process.communicate()
-    # time.sleep(3)
 
+# # Spawning single drone
+# drone_containers.append("sdu_drone_0")
+# bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 0 0"
+# subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+# time.sleep(docker_wait)
 
 
 
@@ -129,10 +127,10 @@ while btn['state'] == tkinter.NORMAL:
 
 
 
-# # Test service call
-# for i in range(SWARM_SIZE):
-#     bashCmd = "rosservice call /setpoint_controller/forward" + str(i)
-#     process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+# Test service calls
+
+# bashCmd = "rosservice call /setpoint_controller/circle {{}}"
+# process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 # time.sleep(10)
 
 
@@ -179,7 +177,4 @@ output, error = process.communicate()
 
 print('\n')
 print("--- DONE ---")
-
-
-
 

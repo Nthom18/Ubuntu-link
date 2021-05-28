@@ -2,7 +2,7 @@
 
 docker run --name world --network host -id --rm sduuascenter/px4-simulation:vm-server-sdu-world 17550 11311 empty
 
-docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 -1 -1
+docker run --name drone --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 0 0
 
 GAZEBO_MASTER_URI=http://localhost:17550 gzclient --verbose
 
@@ -21,7 +21,7 @@ docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550
 
 qgc
 
-Desktop/Ubuntu-link/./offb_posctl.py
+Desktop/Ubuntu-link/physics_simulation/./offb_posctl.py
 
 rosservice call /setpoint_controller/circle "{}" 
 
