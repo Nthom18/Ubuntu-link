@@ -1,12 +1,10 @@
-"""
+'''
 Management of containers and init of offboard control and appliance of behaviour.
 
 Author: Nicoline Louise Thomsen
-"""
+'''
 
-import numpy as np
 import subprocess
-# import threading
 import time
 import tkinter
 
@@ -14,10 +12,7 @@ import offb_posctl as offb
 
 from drone import Drone
 
-import kinematic_simulation_copy.constants
 from kinematic_simulation_copy.behaviour import Behaviour
-from kinematic_simulation_copy.logger import Logger
-from kinematic_simulation_copy.vector import Vector2D
 
 SWARM_SIZE = 5
 docker_wait = 4
@@ -63,8 +58,6 @@ process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 time.sleep(docker_wait)
 
 drone_containers = []
-start_drones_d()
-
 
 # # Spawning single drone
 # drone_containers.append("sdu_drone_0")
@@ -72,6 +65,7 @@ start_drones_d()
 # subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 # time.sleep(docker_wait)
 
+start_drones_d()
 
 
 
@@ -119,9 +113,6 @@ while btn['state'] == tkinter.NORMAL:
     root.update_idletasks()
     root.update()
     time.sleep(0.01)
-
-
-
 
 
 

@@ -1,3 +1,9 @@
+'''
+Translator between offb_posctl.py and behaviour.py.
+
+Author: Nicoline Louise Thomsen
+'''
+
 import numpy as np
 
 import offb_posctl as offb
@@ -24,6 +30,7 @@ class Drone():
         
         self.velocity = Vector2D(*(np.random.rand(2) - 0.5) * 0.01)
         # self.velocity = Vector2D(*np.zeros(2))
+        
         self.acceleration = Vector2D(*np.zeros(2))
 
         self.collision_flag = False

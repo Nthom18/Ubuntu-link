@@ -4,6 +4,7 @@
 """
 offboard_ctrl.py: Controlling the setpoints
 
+This script was provided by SDU UAS Center and modified by Nicoline L. Thomsen
 """
 
 ###############################################
