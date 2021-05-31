@@ -1,5 +1,7 @@
 '''
-Plotting csv files for case c).
+Plotting csv files for case c), specefically the test for flock size.
+
+Author: Nicoline Louise Thomsen
 '''
 
 import csv

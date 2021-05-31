@@ -1,6 +1,7 @@
 '''
 Plotting csv files for case d).
-This script only works for a flock of five drones.
+
+Author: Nicoline Louise Thomsen
 '''
 
 import csv

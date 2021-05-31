@@ -1,7 +1,9 @@
 '''
-Using the principle of Ray Marching 
-from Sebastion Lague Youtube video:
+Simulated LiDAR approximation.
 
+Author: Nicoline Louise Thomsen
+
+Using the principle of Ray Marching from Sebastion Lague Youtube video:
 https://www.youtube.com/watch?v=Cp5WWtMoeKg&ab_channel=SebastianLague
 '''
 

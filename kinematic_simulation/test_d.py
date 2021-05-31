@@ -1,3 +1,9 @@
+'''
+Running case scenario of case d).
+
+Author: Nicoline Louise Thomsen
+'''
+
 from main import main
 from logger import Logger
 

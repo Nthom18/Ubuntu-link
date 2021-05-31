@@ -1,10 +1,12 @@
-"""
+'''
 Rulebase for behaviour of drones
 
 Author: Nicoline Louise Thomsen
 
-Followed tutorial for boids behaviour: https://medium.com/better-programming/drones-simulating-birds-flock-behavior-in-python-9fff99375118
-"""
+Inspiration from tutorial for boids behaviour: 
+https://medium.com/better-programming/drones-simulating-birds-flock-behavior-in-python-9fff99375118
+The code have been changed to use the datastructure of the Vector2D class, changed the gui package, and other modifications to improve the behaviour for use on drone platforms.
+'''
 
 import math
 import numpy as np
@@ -30,7 +32,7 @@ class Behaviour():
         # Case c) specific
         self.trees = obstacle_list[2:]
         self.analyzed_trees = np.zeros(len(self.trees))     # Binary checklist
-        self.analyzing_trees = np.zeros(len(self.trees))    # Array denoting number of drone on a tree
+        self.analyzing_trees = np.zeros(len(self.trees))    # Array denoting number of drones on a tree
         self.tree_timers = np.zeros(len(self.trees)) + TIME_TO_ANALYZE
 
         self.break_flag = False
@@ -96,8 +98,6 @@ class Behaviour():
 
         else:
             self.force = self.seek(self.drone.target_tree)
-
-        # print(self.analyzing_trees, self.analyzed_trees, self.tree_timers)
 
 
     def case_d(self, target, boid_force):
@@ -176,18 +176,11 @@ class Behaviour():
 
         if total > 0:
             avg_vector /= total
-
-            # if steering.__abs__() > 0:
-                # avg_vector = avg_vector.norm() * constants.MAX_SPEED
             
             if avg_vector.__abs__() > 0:
                 steering = avg_vector - self.drone.velocity
 
-        # if steering.__abs__() > constants.MAX_FORCE:
-        #     steering = steering.norm() * constants.MAX_FORCE
-
         return steering.norm() * constants.MAX_FORCE
-        # return steering
 
 
     def obstacle_avoidance(self):

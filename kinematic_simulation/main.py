@@ -2,7 +2,7 @@
 Simple simulation of drone flock behaviour.
 
 Author: Nicoline Louise Thomsen
-Last update: 18-02-21
+Last update: 31-05-21
 """
 
 from ctypes import alignment
@@ -161,7 +161,7 @@ def main(frame_duration, case_id, test_id, flock_size):
     # optFrame = OptionFrame()  # Option frame disabled
 
     frame = 0
-    number_of_rules = 2
+    number_of_rules = 2 # Alignment and cohesion that should be blended
     rule_picker = 0
 
     # Static target
@@ -249,6 +249,8 @@ def main(frame_duration, case_id, test_id, flock_size):
             collision_tracker += change_tracker != boid.collision_flag
 
         frame += 1
+
+        # Main loop breakers
         if frame > frame_duration and frame_duration != -1: break
         if steer.break_flag == True: break
 

@@ -6,6 +6,9 @@ Accessed: 17-02-21
 
 Source:
 https://scipython.com/book2/chapter-4-the-core-python-language-ii/examples/a-2d-vector-class/
+
+
+Custom functions has been added to expand functionality.
 """
 
 import math
@@ -78,6 +81,9 @@ class Vector2D:
     def to_polar(self):
         """Return the vector's components in polar coordinates."""
         return self.__abs__(), math.atan2(self.y, self.x)
+
+
+
 
     # *******V******* Custom functions *******V******* #
 

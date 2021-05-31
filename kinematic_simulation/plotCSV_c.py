@@ -1,5 +1,7 @@
 '''
 Plotting csv files for case c).
+
+Author: Nicoline Louise Thomsen
 '''
 
 import csv

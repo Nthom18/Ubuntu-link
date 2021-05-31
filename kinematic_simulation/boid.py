@@ -1,10 +1,11 @@
-"""
+'''
 Creation and management of boids on the board.
 
 Author: Nicoline Louise Thomsen
 
-Followed tutorial: https://medium.com/better-programming/boids-simulating-birds-flock-behavior-in-python-9fff99375118
-"""
+Inspiration from tutorial for boids behaviour: 
+https://medium.com/better-programming/boids-simulating-birds-flock-behavior-in-python-9fff99375118
+'''
 import numpy as np
 import tkinter as tk
 from vector import Vector2D
@@ -72,6 +73,7 @@ class Boid():
         x1 = self.position.x + DOT_SIZE
         y1 = self.position.y + DOT_SIZE
         return self.canvas.create_oval(x0, y0, x1, y1, fill = self.colour, outline = "")
+
 
     def outOfBounds(self):
         if self.position.x > constants.BOARD_SIZE:

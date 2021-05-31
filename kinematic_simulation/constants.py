@@ -1,4 +1,9 @@
-import numpy as np
+'''
+Global constants that are accessible to every script.
+
+Author: Nicoline Louise Thomsen
+'''
+
 import pyautogui
 
 _, SCREEN_HEIGHT = pyautogui.size()

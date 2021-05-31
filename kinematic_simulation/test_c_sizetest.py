@@ -1,3 +1,9 @@
+'''
+Running case scenario of case c), specefically the test for flock size.
+
+Author: Nicoline Louise Thomsen
+'''
+
 from main import main
 
 nr_of_tests = 10
