@@ -93,10 +93,11 @@ btn = tkinter.Button(root, text = 'Initiate shutdown', bd = '5')
 btn.pack()
 
 
+case_id = 'd'
 rule_picker = 0
 obstacleList_circle = [[5.9, -22.5, 1.5], [-12.85, -25, 1.5], [-7.6, -22, 1.5], [6.6, -15, 2], [11.6, -10, 2.5], [3.4, -12.5, 2.5], [13.4, -20, 3.5], [-3.6, -25, 3.75], [-93.35, -21.6, 75], [93.35, -21.6, 75]]
 target = [842 / 40, (864 - 100) / 20]   # Same goal as kinematic after rescaling 
-steer = Behaviour('d', obstacleList_circle)   # Steering vector
+steer = Behaviour(case_id, obstacleList_circle)   # Steering vector
 
 
 # MAIN LOOP ###################################

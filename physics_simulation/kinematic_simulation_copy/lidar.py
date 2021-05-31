@@ -1,7 +1,9 @@
 '''
-Using the principle of Ray Marching 
-from Sebastion Lague Youtube video:
+Simulated LiDAR approximation.
 
+Author: Nicoline Louise Thomsen
+
+Using the principle of Ray Marching from Sebastion Lague Youtube video:
 https://www.youtube.com/watch?v=Cp5WWtMoeKg&ab_channel=SebastianLague
 '''
 
@@ -9,7 +11,7 @@ import math
 import numpy as np
 from kinematic_simulation_copy.vector import Vector2D
 
-import kinematic_simulation_copy.constants
+import kinematic_simulation_copy.constants as constants
 
 THRESHOLD = 0.1
 MAX_MARCHING_STEPS = 15
@@ -26,13 +28,7 @@ class LiDAR():
         self.sensorReadings = []
 
 
-
     def update(self, originPoint):
-        # DEBUG visualization
-        self.canvas.delete("red")
-        self.canvas.delete("grey")
-        # -------------------
-
         self.oPos = originPoint.position
         self.oDir = originPoint.velocity.norm()
 
@@ -64,19 +60,11 @@ class LiDAR():
         
 
     def signedDistToScene(self, p):
-        distToScene = 864/20    # kinematic board size after rescaling
+        distToScene = constants.BOARD_SIZE
 
         for circle in self.obstacles_circle:
             distToCircle = self.signedDistToCircle(p, circle)
             distToScene = min(distToCircle, distToScene)
-
-        # for box in self.obstacles_box:
-        #     distToBox = self.signedDistToBox(p, box)
-        #     distToScene = min(distToBox, distToScene)
-
-        # # DEBUG
-        # self.drawDistance(distToScene)
-        # print(distToScene)
 
         return distToScene
 
@@ -86,21 +74,8 @@ class LiDAR():
         radius = circle[2]
         return self.length(centre - p) - radius
 
-    def signedDistToBox(self, p, box):
-        centre = Vector2D(box[0], box[1])
-        size = Vector2D(box[2], box[3])
-        offset = ((centre - p).positive() - size).__abs__()
-
-        # d = np.sqrt(max(centre.x - size.x/2 - p.x, 0)**2 + max(centre.y - size.y/2 - p.y, 0)**2)
-        
-        # dst from point outside box to edge (0 if inside box)
-        unsignedDst = max(offset, 0)
-        # -dst from point inside box to edge (0 if outside box)
-        # dstInsideBox = max(min(offset, 0))
-
-        return unsignedDst
-        # return constants.BOARD_SIZE
-
 
     def length(self, v):
         return np.sqrt(v.x**2 + v.y**2)
+
+

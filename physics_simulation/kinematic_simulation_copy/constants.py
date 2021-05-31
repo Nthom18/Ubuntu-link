@@ -1,8 +1,15 @@
-import numpy as np
+'''
+Global constants that are accessible to every script.
+
+Author: Nicoline Louise Thomsen
+'''
+
 import pyautogui
 
 _, SCREEN_HEIGHT = pyautogui.size()
-BOARD_SIZE = SCREEN_HEIGHT * 4/5
+# BOARD_SIZE = SCREEN_HEIGHT * 4/5
+BOARD_SIZE = 864    # Board size of the computer used to run the tests
+
 
 # Boids attributes
 FLOCK_SIZE = 5
@@ -12,6 +19,7 @@ MAX_SPEED = 8
 MAX_FORCE = 1
 GOALZONE = DRONE_RADIUS * FLOCK_SIZE + DRONE_RADIUS
 
+# Colours
 COLOUR_RED = "red"
 COLOUR_WHITE = "white"
 COLOUR_GREY = "gray64"
