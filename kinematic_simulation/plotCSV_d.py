@@ -15,7 +15,7 @@ dst4 = []
 
 def plotCSV_d(filename):
     
-    with open('logs/' + filename + '.csv','r') as csvfileQuick:
+    with open('logs_test_d/' + filename + '.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             t.append(int(row[0]))
@@ -24,7 +24,6 @@ def plotCSV_d(filename):
             dst2.append(float(row[3]))
             dst3.append(float(row[4]))
             dst4.append(float(row[5]))
-
 
     plt.plot(t, dst0, label = 'Drone_0')
     plt.plot(t, dst1, label = 'Drone_1')
@@ -37,7 +36,9 @@ def plotCSV_d(filename):
     plt.legend()
     
     plt.show()
+    
 
 
 if __name__ == '__main__':
-    plotCSV_d('data_d_main')
+    plotCSV_d('data_d_23')
+    # 9 15 23
