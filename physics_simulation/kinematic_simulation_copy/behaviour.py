@@ -13,28 +13,34 @@ import numpy as np
 from kinematic_simulation_copy.vector import Vector2D
 
 import kinematic_simulation_copy.constants as constants
+from kinematic_simulation_copy.logger import Logger
 
 FOV = 1/6
-MARGIN = 20
+MARGIN = 20 * constants.GAZEBO_SCALE
 STOP_FORCE = 0.5
 MAX_DRONE_PR_TREE = 3
 TIME_TO_ANALYZE = 1000
 
+
 class Behaviour():
 
-    def __init__(self, case_id, obstacle_list):
+    def __init__(self, case_id):
         self.drone = []
         self.percieved_flockmates = []
         self.force = 0
         self.case_id = case_id
         
         # Case c) specific
-        self.trees = obstacle_list[2:]
+        self.trees = constants.OBSTACLE_LIST[2:]
         self.analyzed_trees = np.zeros(len(self.trees))     # Binary checklist
         self.analyzing_trees = np.zeros(len(self.trees))    # Array denoting number of drones on a tree
         self.tree_timers = np.zeros(len(self.trees)) + TIME_TO_ANALYZE
 
         self.break_flag = False
+
+        # Init logging
+        self.log = Logger('d', 'x', 1)
+        self.frame_log_id = 0
 
 
     def update(self, drone, flock, target, rule_picker):
@@ -104,13 +110,27 @@ class Behaviour():
         if self.drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
             if self.drone.velocity.__abs__() != 0:
                 self.force = - self.drone.velocity * STOP_FORCE
+                print('Goal zone - stopping')
+                self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'G1')
             else:
-                self.force = Vector2D(*np.zeros(2)) 
+                self.force = Vector2D(*np.zeros(2))
+                print('Goal zone - still')
+                self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'G2')
+
         # Only focus on seek if goalzone is near
         elif self.drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
             self.force = self.seek(target)
+            print('Seek only')
+            self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'S')
         # Normal operation if goalzone is far
-        else: self.force = boid_force + self.seek(target)
+        else: 
+            self.force = boid_force + self.seek(target)
+            print('Normal operation')
+            self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'N')
+
+        self.frame_log_id += 1
+
+
 
 
 ############################# BEHAVIOURS #############################
