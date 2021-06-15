@@ -13,6 +13,7 @@ import offb_posctl as offb
 from drone import Drone
 
 from kinematic_simulation_copy.behaviour import Behaviour
+import kinematic_simulation_copy.constants as constants
 
 SWARM_SIZE = 5
 docker_wait = 4
@@ -47,6 +48,28 @@ def start_drones_d():
     subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
     time.sleep(docker_wait)
 
+def start_drones_1():
+    x = 0
+    y = -2.5
+
+    drone_containers.append("sdu_drone_0")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 " + str(x-1) + " " + str(y)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
+def start_drones_2():
+    x = 0
+    y = -2.5
+
+    drone_containers.append("sdu_drone_0")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 " + str(x-1) + " " + str(y)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
+
+    drone_containers.append("sdu_drone_1")
+    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 " + str(x+1) + " " + str(y)
+    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
+    time.sleep(docker_wait)
 
 # Start containers
 print("--- Starting containers ---")
@@ -59,14 +82,10 @@ time.sleep(docker_wait)
 
 drone_containers = []
 
-# # Spawning single drone
-# drone_containers.append("sdu_drone_0")
-# bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 0 0"
-# subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-# time.sleep(docker_wait)
 
 start_drones_d()
-
+# start_drones_1()
+# start_drones_2()
 
 
 print("Drone containers: ", drone_containers)
@@ -80,7 +99,7 @@ print('\n')
 drone_controls = [offb.OffboardControl(container) for container in drone_containers]
 flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
-time.sleep(5)   # Let last drone get airborne
+time.sleep(15)   # Let last drone get airborne
 
 print('\n')
 print("--- Startup complete ---")
@@ -95,10 +114,8 @@ btn.pack()
 
 case_id = 'd'
 rule_picker = 0
-obstacleList_circle = [[5.9, -22.5, 1.5], [-12.85, -25, 1.5], [-7.6, -22, 1.5], [6.6, -15, 2], [11.6, -10, 2.5], [3.4, -12.5, 2.5], [13.4, -20, 3.5], [-3.6, -25, 3.75], [-93.35, -21.6, 75], [93.35, -21.6, 75]]
-target = [842 / 40, (864 - 100) / 20]   # Same goal as kinematic after rescaling 
-steer = Behaviour(case_id, obstacleList_circle)   # Steering vector
-
+target = [0, -(864 - 100) * constants.GAZEBO_SCALE]   # Same goal as kinematic after rescaling 
+steer = Behaviour(case_id)   # Steering vector
 
 # MAIN LOOP ###################################
 while btn['state'] == tkinter.NORMAL:
