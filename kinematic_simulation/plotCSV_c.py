@@ -11,9 +11,9 @@ t = []
 frame = []
 collisions = []
 
-def plotCSV_d(filename):
+def plotCSV_c(filename):
     
-    with open('logs_test_c/' + filename + '.csv','r') as csvfileQuick:
+    with open('logs/' + filename + '.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             t.append(int(row[0]))
@@ -30,7 +30,7 @@ def plotCSV_d(filename):
     print('Avg_5: ', sum(frame)/len(t))
 
     # plt.plot(t, collisions, label = 'Collisions')
-    plt.xlabel('Time steps')
+    plt.xlabel('Test number')
     plt.ylabel('Frames')
     plt.title('Frames until completion')
     plt.legend()
@@ -39,4 +39,4 @@ def plotCSV_d(filename):
 
 
 if __name__ == '__main__':
-    plotCSV_d('data_c')
+    plotCSV_c('data_c')

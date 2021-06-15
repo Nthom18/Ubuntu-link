@@ -229,24 +229,27 @@ def main(frame_duration, case_id, test_id, flock_size):
         # cursor_pos = [root.winfo_pointerx() - root.winfo_rootx(), root.winfo_pointery() - root.winfo_rooty()]
         # # target = cursor_pos
         
+        takeScreenshot(boidFrame.board)
+
         rule_picker = (rule_picker + 1) % number_of_rules
 
         # Boid control
-        for i, boid in enumerate(flock):
-            change_tracker = boid.collision_flag
+        if frame > 50:
+            for i, boid in enumerate(flock):
+                change_tracker = boid.collision_flag
 
-            if boid.collision_flag == False:
-                steer.update(boid, flock, target, rule_picker)  # Steering vector
+                if boid.collision_flag == False:
+                    steer.update(boid, flock, target, rule_picker)  # Steering vector
 
-                if steer.force.__abs__() > constants.MAX_FORCE:
-                    steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
+                    if steer.force.__abs__() > constants.MAX_FORCE:
+                        steer.force = (steer.force / steer.force.__abs__()) * constants.MAX_FORCE
 
-                boid.update(steer.force)
+                    boid.update(steer.force)
 
-            # Logging distance to egde of goalzone (0 while inside)
-            dst_target_log[i] = max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
+                # Logging distance to egde of goalzone (0 while inside)
+                dst_target_log[i] = max((boid.position - Vector2D(*target)).__abs__() - constants.GOALZONE, 0)
 
-            collision_tracker += change_tracker != boid.collision_flag
+                collision_tracker += change_tracker != boid.collision_flag
 
         frame += 1
 

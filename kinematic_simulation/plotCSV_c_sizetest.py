@@ -13,25 +13,25 @@ frame2 = []
 frame3 = []
 frame4 = []
 
-def plotCSV_d(filename):
+def plotCSV_c_sizetest(filename):
     
-    with open('logs_test_c/' + filename + '_1.csv','r') as csvfileQuick:
+    with open('logs/' + filename + '_1.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             t.append(int(row[0]))
             frame1.append(float(row[1]))
 
-    with open('logs_test_c/' + filename + '_3.csv','r') as csvfileQuick:
+    with open('logs/' + filename + '_3.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             frame2.append(float(row[1]))
     
-    with open('logs_test_c/' + filename + '_5.csv','r') as csvfileQuick:
+    with open('logs/' + filename + '_5.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             frame3.append(float(row[1]))
 
-    with open('logs_test_c/' + filename + '_7.csv','r') as csvfileQuick:
+    with open('logs/' + filename + '_7.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             frame4.append(float(row[1]))
@@ -60,4 +60,4 @@ def plotCSV_d(filename):
 
 
 if __name__ == '__main__':
-    plotCSV_d('data_c')
+    plotCSV_c_sizetest('data_c')

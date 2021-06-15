@@ -16,7 +16,7 @@ dst4 = []
 
 def plotCSV_d(filename):
     
-    with open('logs_test_d/' + filename + '.csv','r') as csvfileQuick:
+    with open('logs/' + filename + '.csv','r') as csvfileQuick:
         plots = csv.reader(csvfileQuick, delimiter=',')
         for row in plots:
             t.append(int(row[0]))
@@ -41,5 +41,5 @@ def plotCSV_d(filename):
 
 
 if __name__ == '__main__':
-    plotCSV_d('data_d_23')
+    plotCSV_d('data_d_combined')
     # 9 15 23
