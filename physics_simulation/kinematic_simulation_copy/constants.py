@@ -17,8 +17,8 @@ BOARD_SIZE = 864 * GAZEBO_SCALE    # Board size of the computer used to run the 
 FLOCK_SIZE = 5
 DRONE_RADIUS = 0.74
 PERCEPTION = SCREEN_HEIGHT / 8
-MAX_SPEED = 10
-MAX_FORCE = 10
+MAX_SPEED = 1
+MAX_FORCE = 1
 GOALZONE = DRONE_RADIUS * FLOCK_SIZE + DRONE_RADIUS
 
 # Physics simulation specific:

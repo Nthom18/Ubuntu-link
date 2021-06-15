@@ -52,6 +52,8 @@ class Drone():
         
         self.acceleration = Vector2D(*np.zeros(2))
 
+        self.lidar.update(self)
+
         # print(self.id, ": ", self.position)
 
 

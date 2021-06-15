@@ -59,6 +59,7 @@ class Behaviour():
         # Priority rule selection
         if self.obstacle_avoidance().__abs__() > 0 or self.separation().__abs__() > 0: 
             self.force = self.obstacle_avoidance() + self.separation()
+            # print('Obstacle avoidance')
 
         # Case c)
         elif self.case_id == 'c':
@@ -110,24 +111,26 @@ class Behaviour():
         if self.drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE:
             if self.drone.velocity.__abs__() != 0:
                 self.force = - self.drone.velocity * STOP_FORCE
-                print('Goal zone - stopping')
+                # print('Goal zone - stopping')
                 self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'G1')
             else:
                 self.force = Vector2D(*np.zeros(2))
-                print('Goal zone - still')
+                # print('Goal zone - still')
                 self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'G2')
 
         # Only focus on seek if goalzone is near
         elif self.drone.position.distance_to(Vector2D(*target)) < constants.GOALZONE * 2:
             self.force = self.seek(target)
-            print('Seek only')
+            # print('Seek only')
             self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'S')
         # Normal operation if goalzone is far
         else: 
             self.force = boid_force + self.seek(target)
-            print('Normal operation')
+            # print('Normal operation')
             self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'N')
 
+
+        self.log.log_to_file(self.frame_log_id, self.drone.position.x, self.drone.position.y, 'N')
         self.frame_log_id += 1
 
 
@@ -210,8 +213,7 @@ class Behaviour():
         near = self.drone.perception - MARGIN
         too_close = 4 * constants.DRONE_RADIUS
 
-
-        return self.avoid(too_close, step_angle) + self.evade(too_close, near, step_angle, )
+        return self.avoid(too_close, step_angle) + self.evade(too_close, near, step_angle)
 
     # Flies directly in the oposite direction of close objects
     def avoid(self, too_close, step_angle):

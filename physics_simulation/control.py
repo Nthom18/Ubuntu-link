@@ -83,8 +83,8 @@ time.sleep(docker_wait)
 drone_containers = []
 
 
-# start_drones_d()
-start_drones_1()
+start_drones_d()
+# start_drones_1()
 # start_drones_2()
 
 
@@ -99,7 +99,7 @@ print('\n')
 drone_controls = [offb.OffboardControl(container) for container in drone_containers]
 flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
-time.sleep(5)   # Let last drone get airborne
+time.sleep(15)   # Let last drone get airborne
 
 print('\n')
 print("--- Startup complete ---")
@@ -114,7 +114,7 @@ btn.pack()
 
 case_id = 'd'
 rule_picker = 0
-target = [constants.GAZEBO_SCALE * 864 / 2, -(864 - 100) * constants.GAZEBO_SCALE]   # Same goal as kinematic after rescaling 
+target = [0, -(864 - 100) * constants.GAZEBO_SCALE]   # Same goal as kinematic after rescaling 
 steer = Behaviour(case_id)   # Steering vector
 
 # MAIN LOOP ###################################

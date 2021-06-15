@@ -22,14 +22,18 @@ with open(filename,'r') as csvfileQuick:
             state.append(str(row[3]))
 
 
+colour = .9
 
 for i in t:
-    if state[i] == 'N': colour = 'red'
-    if state[i] == 'S': colour = 'purple'
-    if state[i] == 'G1': colour = 'green'
-    if state[i] == 'G2': colour = 'yellow'
+    # if state[i] == 'N': colour = 'red'
+    # if state[i] == 'S': colour = 'purple'
+    # if state[i] == 'G1': colour = 'green'
+    # if state[i] == 'G2': colour = 'yellow'
+
+    if i % len(t)/20 == 0 and colour > 0.1:
+        colour -= 0.005
     
-    plt.scatter([x[i]*scale+432], [-y[i]*scale], c=colour, s=10)
+    plt.scatter([x[i]*scale+432], [-y[i]*scale], c=[1, colour, colour], s=10)
 
 # plt.xlabel('Time steps')
 # plt.ylabel('Frames')
