@@ -83,8 +83,8 @@ time.sleep(docker_wait)
 drone_containers = []
 
 
-start_drones_d()
-# start_drones_1()
+# start_drones_d()
+start_drones_1()
 # start_drones_2()
 
 
