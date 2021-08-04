@@ -74,7 +74,7 @@ def start_drones_2():
 
 def start_containers_d():
     client.containers.run('vm-server-sdu-world-custom', '17550 11311 case_d', 
-                        #   name='world', 
+                          name='world', 
                           network='host',
                           detach=True, 
                         #   remove=True,
@@ -84,35 +84,35 @@ def start_containers_d():
     y = -2.5
     
     client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 0 ' + str(x-1) + " " + str(y), 
-                        #   name='drone', 
+                          name='sdu_drone_0', 
                         network='host',
                         detach=True, 
                         #   remove=True,
                         restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
 
     client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 1 ' + str(x+1) + " " + str(y), 
-                        #   name='drone', 
+                          name='sdu_drone_1', 
                         network='host',
                         detach=True, 
                         #   remove=True,
                         restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
 
     client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 2 ' + str(x-1) + " " + str(y-2), 
-                        #   name='drone', 
+                          name='sdu_drone_2', 
                         network='host',
                         detach=True, 
                         #   remove=True,
                         restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
 
     client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 3 ' + str(x+1) + " " + str(y-2), 
-                        #   name='drone', 
+                          name='sdu_drone_3', 
                         network='host',
                         detach=True, 
                         #   remove=True,
                         restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
 
     client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 4 ' + str(x) + " " + str(y-1), 
-                        #   name='drone', 
+                          name='sdu_drone_4', 
                         network='host',
                         detach=True, 
                         #   remove=True,
