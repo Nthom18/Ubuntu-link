@@ -4,6 +4,7 @@ Management of containers and init of offboard control and appliance of behaviour
 Author: Nicoline Louise Thomsen
 '''
 
+import docker
 import subprocess
 import time
 import tkinter
@@ -71,22 +72,69 @@ def start_drones_2():
     subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
     time.sleep(docker_wait)
 
+def start_containers_d():
+    client.containers.run('vm-server-sdu-world-custom', '17550 11311 case_d', 
+                        #   name='world', 
+                          network='host',
+                          detach=True, 
+                        #   remove=True,
+                          restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+
+    x = 0
+    y = -2.5
+    
+    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 0 ' + str(x-1) + " " + str(y), 
+                        #   name='drone', 
+                        network='host',
+                        detach=True, 
+                        #   remove=True,
+                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+
+    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 1 ' + str(x+1) + " " + str(y), 
+                        #   name='drone', 
+                        network='host',
+                        detach=True, 
+                        #   remove=True,
+                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+
+    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 2 ' + str(x-1) + " " + str(y-2), 
+                        #   name='drone', 
+                        network='host',
+                        detach=True, 
+                        #   remove=True,
+                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+
+    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 3 ' + str(x+1) + " " + str(y-2), 
+                        #   name='drone', 
+                        network='host',
+                        detach=True, 
+                        #   remove=True,
+                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+
+    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 4 ' + str(x) + " " + str(y-1), 
+                        #   name='drone', 
+                        network='host',
+                        detach=True, 
+                        #   remove=True,
+                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+
+drone_containers = []
+drone_containers.append("sdu_drone_0")
+drone_containers.append("sdu_drone_1")
+drone_containers.append("sdu_drone_2")
+drone_containers.append("sdu_drone_3")
+drone_containers.append("sdu_drone_4")
+
 # Start containers
 print("--- Starting containers ---")
 print('\n')
 
-bashCmd = "docker run --name world --network host -id --rm vm-server-sdu-world-custom 17550 11311 case_d"
-process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-# output, error = process.communicate()
-time.sleep(docker_wait)
+client = docker.from_env()
+start_containers_d()
 
-drone_containers = []
-
-
-start_drones_d()
+# start_drones_d()
 # start_drones_1()
 # start_drones_2()
-
 
 print("Drone containers: ", drone_containers)
 
@@ -99,7 +147,7 @@ print('\n')
 drone_controls = [offb.OffboardControl(container) for container in drone_containers]
 flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
-time.sleep(15)   # Let last drone get airborne
+# time.sleep(15)   # Let last drone get airborne
 
 print('\n')
 print("--- Startup complete ---")
@@ -117,7 +165,9 @@ rule_picker = 0
 target = [0, -(864 - 100) * constants.GAZEBO_SCALE]   # Same goal as kinematic after rescaling 
 steer = Behaviour(case_id)   # Steering vector
 
+
 # MAIN LOOP ###################################
+
 while btn['state'] == tkinter.NORMAL:
 
     rule_picker = (rule_picker + 1) % 2
@@ -132,7 +182,7 @@ while btn['state'] == tkinter.NORMAL:
     root.update()
     time.sleep(0.01)
 
-
+###############################################
 
 
 
@@ -160,7 +210,7 @@ print('\n')
 # Stop offboard commands
 print("1/3) Stopping offboard commands...")
 print('\n')
-for i in range(SWARM_SIZE):
+for i in range(len(drone_containers)):
     bashCmd = "rosservice call /setpoint_controller/stop" + str(i)
     process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
 time.sleep(5)
@@ -176,13 +226,8 @@ for control in drone_controls:
 print('\n')
 print("3/3) Shutting down containers...")
 
-drone_container_list = ""
-for container in drone_containers:
-    drone_container_list += " " + str(container)
-
-bashCmd = "docker stop world" + drone_container_list
-process = subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-output, error = process.communicate()
+for container in client.containers.list():
+    container.stop()
 
 print('\n')
 print("--- DONE ---")

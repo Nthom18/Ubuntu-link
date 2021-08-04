@@ -20,6 +20,7 @@ import numpy as np
 ###############################################
 import rospy
 import rospkg
+import roslaunch
 
 ###############################################
 # ROS Topic messages                          #
@@ -35,6 +36,15 @@ from mavros_msgs.msg import State
 ###############################################
 from mavros_msgs.srv import CommandBool, SetMode, CommandTOL
 from std_srvs.srv import Empty, EmptyRequest, EmptyResponse
+
+
+###############################################
+# Start roscore                               #
+###############################################
+uuid = roslaunch.rlutil.get_or_generate_uuid(options_runid=None, options_wait_for_master=False)
+roslaunch.configure_logging(uuid)
+launch = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_files=[], is_core=True)
+launch.start()
 
 ###############################################
 # Offboad Control class                       #
