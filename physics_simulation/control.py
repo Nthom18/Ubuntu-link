@@ -19,126 +19,74 @@ import kinematic_simulation_copy.constants as constants
 SWARM_SIZE = 5
 docker_wait = 4
 
-def start_drones_d():
-
-    x = 0
-    y = -2.5
-
-    drone_containers.append("sdu_drone_0")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 " + str(x-1) + " " + str(y)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-    drone_containers.append("sdu_drone_1")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 " + str(x+1) + " " + str(y)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-    drone_containers.append("sdu_drone_2")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 2 " + str(x-1) + " " + str(y-2)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-    drone_containers.append("sdu_drone_3")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 3 " + str(x+1) + " " + str(y-2)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-    drone_containers.append("sdu_drone_4")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 4 " + str(x) + " " + str(y-1)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-def start_drones_1():
-    x = 0
-    y = -2.5
-
-    drone_containers.append("sdu_drone_0")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 " + str(x-1) + " " + str(y)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-def start_drones_2():
-    x = 0
-    y = -2.5
-
-    drone_containers.append("sdu_drone_0")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 0 " + str(x-1) + " " + str(y)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
-
-    drone_containers.append("sdu_drone_1")
-    bashCmd = "docker run --name " + drone_containers[-1] + " --network host --rm -id sduuascenter/px4-simulation:vm-server-sdu-drone 16550 17550 11311 sdu_drone 1 " + str(x+1) + " " + str(y)
-    subprocess.Popen(bashCmd.split(), stdout = subprocess.PIPE)
-    time.sleep(docker_wait)
 
 def start_containers_d():
     client.containers.run('vm-server-sdu-world-custom', '17550 11311 case_d', 
-                          name='world', 
-                          network='host',
-                          detach=True, 
-                        #   remove=True,
-                          restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+                        name='world', 
+                        network='host',
+                        detach=True, 
+                        remove=True,
+                        # restart_policy={"Name": "on-failure", "MaximumRetryCount": 1}
+                        )
 
     x = 0
     y = -2.5
     
     client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 0 ' + str(x-1) + " " + str(y), 
-                          name='sdu_drone_0', 
+                        name='sdu_drone_0', 
                         network='host',
                         detach=True, 
-                        #   remove=True,
-                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+                        remove=True,
+                        # restart_policy={"Name": "on-failure", "MaximumRetryCount": 1}
+                        )
 
-    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 1 ' + str(x+1) + " " + str(y), 
-                          name='sdu_drone_1', 
-                        network='host',
-                        detach=True, 
-                        #   remove=True,
-                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+    # client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 1 ' + str(x+1) + " " + str(y), 
+    #                     name='sdu_drone_1', 
+    #                     network='host',
+    #                     detach=True, 
+    #                     # remove=True,
+    #                     restart_policy={"Name": "on-failure", "MaximumRetryCount": 1})
 
-    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 2 ' + str(x-1) + " " + str(y-2), 
-                          name='sdu_drone_2', 
-                        network='host',
-                        detach=True, 
-                        #   remove=True,
-                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+    # client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 2 ' + str(x-1) + " " + str(y-2), 
+    #                     name='sdu_drone_2', 
+    #                     network='host',
+    #                     detach=True, 
+    #                     # remove=True,
+    #                     restart_policy={"Name": "on-failure", "MaximumRetryCount": 1})
 
-    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 3 ' + str(x+1) + " " + str(y-2), 
-                          name='sdu_drone_3', 
-                        network='host',
-                        detach=True, 
-                        #   remove=True,
-                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+    # client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 3 ' + str(x+1) + " " + str(y-2), 
+    #                     name='sdu_drone_3', 
+    #                     network='host',
+    #                     detach=True, 
+    #                     # remove=True,
+    #                     restart_policy={"Name": "on-failure", "MaximumRetryCount": 1})
 
-    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 4 ' + str(x) + " " + str(y-1), 
-                          name='sdu_drone_4', 
-                        network='host',
-                        detach=True, 
-                        #   remove=True,
-                        restart_policy={"Name": "on-failure", "MaximumRetryCount": 10})
+    # client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 4 ' + str(x) + " " + str(y-1), 
+    #                     name='sdu_drone_4', 
+    #                     network='host',
+    #                     detach=True, 
+    #                     # remove=True,
+    #                     restart_policy={"Name": "on-failure", "MaximumRetryCount": 1})
 
 drone_containers = []
 drone_containers.append("sdu_drone_0")
-drone_containers.append("sdu_drone_1")
-drone_containers.append("sdu_drone_2")
-drone_containers.append("sdu_drone_3")
-drone_containers.append("sdu_drone_4")
+# drone_containers.append("sdu_drone_1")
+# drone_containers.append("sdu_drone_2")
+# drone_containers.append("sdu_drone_3")
+# drone_containers.append("sdu_drone_4")
 
-# Start containers
+##################### Starting containers #####################
+
 print("--- Starting containers ---")
 print('\n')
 
 client = docker.from_env()
 start_containers_d()
 
-# start_drones_d()
-# start_drones_1()
-# start_drones_2()
 
 print("Drone containers: ", drone_containers)
 
-# Starting simulation
+##################### Starting simulation #####################
 print('\n')
 print("--- Starting simulation ---")
 print('\n')
@@ -166,7 +114,7 @@ target = [0, -(864 - 100) * constants.GAZEBO_SCALE]   # Same goal as kinematic a
 steer = Behaviour(case_id)   # Steering vector
 
 
-# MAIN LOOP ###################################
+##################### MAIN LOOP #####################
 
 while btn['state'] == tkinter.NORMAL:
 
@@ -182,7 +130,7 @@ while btn['state'] == tkinter.NORMAL:
     root.update()
     time.sleep(0.01)
 
-###############################################
+#####################################################
 
 
 
@@ -201,6 +149,8 @@ while btn['state'] == tkinter.NORMAL:
 
 # print(drone_controls[0].target)
 
+
+##################### Shutdown sequence #####################
 
 
 print('\n')
