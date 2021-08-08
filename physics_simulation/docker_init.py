@@ -7,21 +7,29 @@ class Docker_init():
 
         self.client = docker_client
 
-        # Create drone container list
-        self.container_list = ['world']
+        #### NOT ALLOWING MORE THAN 8 ACTIVE CONTAINERS ####
+        running_containers = self.client.containers.list()
+        if((len(running_containers) + nr_of_drones + 1) > 8):
+            print("WARNING: No more than 8 running containers at a time!", '\n',
+                "Containers already active: ", len(running_containers), '\n',
+                "New containers to be created: ", nr_of_drones + 1)
+        else:
 
-        for id in range(nr_of_drones):
-            self.container_list.append('sdu_drone_' + str(id))
-            # self.container_list.append('world' + str(id))
+            # Create drone container list
+            self.container_list = ['world']
 
-        self.containers()
+            for id in range(nr_of_drones):
+                self.container_list.append('sdu_drone_' + str(id))
+                # self.container_list.append('world' + str(id))
+
+            self.containers()
 
 
     def containers(self):
         
         def missing_containers():
-            running_container = self.client.containers.list()
-            created_containers = [container.name for container in running_container]
+            running_containers = self.client.containers.list()
+            created_containers = [container.name for container in running_containers]
 
             return list(set(self.container_list) - set(created_containers))
 
@@ -45,7 +53,8 @@ class Docker_init():
         
         while(len(missing_containers()) != 0):
             create_containers(missing_containers())
-            time.sleep(3)
+            time.sleep(10)
+            print('loop')
 
 
 
@@ -53,7 +62,7 @@ if __name__ == '__main__':
 
     client = docker.from_env()
 
-    foo = Docker_init(client, 10)
+    foo = Docker_init(client, 7)
 
     # for container in client.containers.list():
     #     container.stop()
