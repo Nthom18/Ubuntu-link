@@ -22,18 +22,24 @@ class Docker_init():
                 self.container_list.append('sdu_drone_' + str(id))
                 # self.container_list.append('world' + str(id))
 
-            self.containers()
+            self.create_containers()
 
+        running_containers = self.client.containers.list()
+        created_containers = [container.name for container in running_containers]
+        print(created_containers)
+        
 
-    def containers(self):
+    def create_containers(self):
         
         def missing_containers():
             running_containers = self.client.containers.list()
             created_containers = [container.name for container in running_containers]
 
+            print(created_containers)
+
             return list(set(self.container_list) - set(created_containers))
 
-        def create_containers(missing_containers):
+        def start_containers(missing_containers):
             for container in missing_containers:
                 # CREATE DOCKER CONTAINER
                 if container == 'world':
@@ -52,19 +58,16 @@ class Docker_init():
 
         
         while(len(missing_containers()) != 0):
-            create_containers(missing_containers())
-            time.sleep(10)
             print('loop')
-
+            start_containers(missing_containers())
+            time.sleep(10)
 
 
 if __name__ == '__main__':
 
     client = docker.from_env()
 
-    foo = Docker_init(client, 7)
+    foo = Docker_init(client, 2)
 
-    # for container in client.containers.list():
-    #     container.stop()
         
 

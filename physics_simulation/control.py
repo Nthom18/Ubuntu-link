@@ -33,7 +33,7 @@ def start_containers_d():
     x = 0
     y = -2.5
     
-    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 0 ' + str(x-1) + " " + str(y), 
+    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 0 ' + str(x-1) + ' ' + str(y), 
                         name='sdu_drone_0', 
                         network='host',
                         detach=True, 
@@ -69,8 +69,8 @@ def start_containers_d():
     #                     # remove=True,
     #                     restart_policy={"Name": "on-failure", "MaximumRetryCount": 1})
 
-drone_containers = []
-drone_containers.append("sdu_drone_0")
+# drone_containers = []
+# drone_containers.append("sdu_drone_0")
 # drone_containers.append("sdu_drone_1")
 # drone_containers.append("sdu_drone_2")
 # drone_containers.append("sdu_drone_3")
@@ -82,10 +82,12 @@ print("--- Starting containers ---")
 print('\n')
 
 client = docker.from_env()
-start_containers_d()
+# start_containers_d()
 
+Docker_init(client, 3)
 
-print("Drone containers: ", drone_containers)
+# print(client.containers.list().name)
+
 
 ##################### Starting simulation #####################
 print('\n')
@@ -93,8 +95,8 @@ print("--- Starting simulation ---")
 print('\n')
 
 # Initiate OFFBOARD CONTROL for all drone containers
-drone_controls = [offb.OffboardControl(container) for container in drone_containers]
-flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
+# drone_controls = [offb.OffboardControl(container) for container in drone_containers]
+# flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
 # time.sleep(15)   # Let last drone get airborne
 
