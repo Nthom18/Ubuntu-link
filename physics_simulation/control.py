@@ -11,6 +11,7 @@ import tkinter
 
 import offb_posctl as offb
 
+from docker_init import Docker_init
 from drone import Drone
 
 from kinematic_simulation_copy.behaviour import Behaviour
