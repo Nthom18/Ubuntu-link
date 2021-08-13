@@ -7,12 +7,14 @@ class Docker_init():
 
         self.client = docker_client
 
-        #### NOT ALLOWING MORE THAN 8 ACTIVE CONTAINERS ####
+        #### NOT ALLOWING MORE THAN A NUMBER OF ACTIVE CONTAINERS ####
+        max_containers = 8
         running_containers = self.client.containers.list()
-        if((len(running_containers) + nr_of_drones + 1) > 8):
-            print("WARNING: No more than 8 running containers at a time!", '\n',
+        if((len(running_containers) + nr_of_drones + 1) > max_containers):
+            print("WARNING: No more than " + str(max_containers) + " running containers at a time!", '\n',
                 "Containers already active: ", len(running_containers), '\n',
-                "New containers to be created: ", nr_of_drones + 1)
+                "New containers to be created: ", nr_of_drones + 1, '\n',
+                "Please stop running containers before continuing, or decrease the number of containers to be created.")
         else:
 
             # Create drone container list
@@ -24,9 +26,10 @@ class Docker_init():
 
             self.create_containers()
 
-        running_containers = self.client.containers.list()
-        created_containers = [container.name for container in running_containers]
-        print(created_containers)
+            # Print created containers
+            running_containers = self.client.containers.list()
+            created_containers = [container.name for container in running_containers]
+            print(created_containers)
         
 
     def create_containers(self):
@@ -35,39 +38,39 @@ class Docker_init():
             running_containers = self.client.containers.list()
             created_containers = [container.name for container in running_containers]
 
-            print(created_containers)
-
             return list(set(self.container_list) - set(created_containers))
 
         def start_containers(missing_containers):
             for container in missing_containers:
                 # CREATE DOCKER CONTAINER
                 if container == 'world':
-                    client.containers.run('vm-server-sdu-world-custom', '17550 11311 case_d', 
-                        name=container, 
-                        network='host',
-                        detach=True, 
-                        remove=True)
+                    client.containers.run('vm-server-sdu-world-custom', 
+                        '17550 11311 case_d',   # Command to be run in container
+                        name = container, 
+                        network = 'host',
+                        detach = True, 
+                        remove = True
+                        )
+                    time.sleep(5)
 
                 else:
-                    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', '16550 17550 11311 sdu_drone 0 0 0', 
-                        name=container, 
-                        network='host',
-                        detach=True, 
-                        remove=True)
+                    client.containers.run('sduuascenter/px4-simulation:vm-server-sdu-drone', 
+                        '16550 17550 11311 sdu_drone 0 0 0',    # Command to be run in container
+                        name = container, 
+                        network = 'host',
+                        detach = True, 
+                        remove = True
+                        )
 
         
         while(len(missing_containers()) != 0):
             print('loop')
             start_containers(missing_containers())
-            time.sleep(10)
+            # time.sleep(10)
 
 
 if __name__ == '__main__':
 
     client = docker.from_env()
 
-    foo = Docker_init(client, 2)
-
-        
-
+    foo = Docker_init(client, 1)

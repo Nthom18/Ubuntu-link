@@ -69,7 +69,7 @@ def start_containers_d():
     #                     # remove=True,
     #                     restart_policy={"Name": "on-failure", "MaximumRetryCount": 1})
 
-# drone_containers = []
+drone_containers = []
 # drone_containers.append("sdu_drone_0")
 # drone_containers.append("sdu_drone_1")
 # drone_containers.append("sdu_drone_2")
@@ -95,8 +95,8 @@ print("--- Starting simulation ---")
 print('\n')
 
 # Initiate OFFBOARD CONTROL for all drone containers
-# drone_controls = [offb.OffboardControl(container) for container in drone_containers]
-# flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
+drone_controls = [offb.OffboardControl(container) for container in drone_containers]
+flock = [Drone(drone_controllers, id) for id, drone_controllers in enumerate(drone_controls)]
 
 # time.sleep(15)   # Let last drone get airborne
 
